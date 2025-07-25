@@ -1,0 +1,14 @@
+[project]
+name = "factwave"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dotenv>=0.9.9",
+    "openai>=1.97.1",
+    "crewai>=0.86.0",
+    "crewai-tools>=0.4.26",
+    "rich>=13.7.0",
+    "pyyaml>=6.0.1",
+]
