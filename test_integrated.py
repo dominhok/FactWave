@@ -25,7 +25,7 @@ def test_individual_tools():
     """개별 도구 테스트"""
     console.print("\n[bold cyan]🔧 개별 도구 테스트[/bold cyan]\n")
     
-    from app.services.tools import WikipediaSearchTool, SemanticScholarTool, ArxivSearchTool, WorldBankTool, NaverNewsTool, GlobalStatisticsTool
+    from app.services.tools import WikipediaSearchTool, ArxivSearchTool, NaverNewsTool, OpenAlexTool
     
     # Test Wikipedia
     console.print("[bold]1. Wikipedia Search Tool[/bold]")
@@ -38,14 +38,15 @@ def test_individual_tools():
     
     console.print("\n" + "="*80 + "\n")
     
-    # Test Semantic Scholar
-    console.print("[bold]2. Semantic Scholar Tool[/bold]")
+    # Test OpenAlex (Semantic Scholar 대체)
+    console.print("[bold]2. OpenAlex Academic Search[/bold]")
     try:
-        ss_tool = SemanticScholarTool()
-        ss_result = ss_tool._run("GPT-4", limit=2)
-        console.print(Panel(ss_result, title="Semantic Scholar Result", border_style="blue"))
+        oa_tool = OpenAlexTool()
+        oa_result = oa_tool._run("GPT-4", limit=2)
+        console.print(Panel(oa_result, title="OpenAlex Result", border_style="blue"))
     except Exception as e:
-        console.print(f"[red]❌ Semantic Scholar 오류: {e}[/red]")
+        console.print(f"[red]❌ OpenAlex 오류: {e}[/red]")
+    
     
     console.print("\n" + "="*80 + "\n")
     
@@ -60,34 +61,8 @@ def test_individual_tools():
     
     console.print("\n" + "="*80 + "\n")
     
-    # Test Global Statistics
-    console.print("[bold]4. Global Statistics Tool[/bold]")
-    try:
-        gs_tool = GlobalStatisticsTool()
-        gs_result = gs_tool.get_wb_indicator("gdp_per_capita", "korea", 2022, 2023)
-        if gs_result is not None:
-            result_str = f"✅ 성공: {len(gs_result)}개 데이터 조회\n{gs_result.to_string()}"
-        else:
-            result_str = "❌ 데이터 없음"
-        console.print(Panel(result_str, title="Global Statistics Result", border_style="magenta"))
-    except Exception as e:
-        console.print(f"[red]❌ Global Statistics 오류: {e}[/red]")
-    
-    console.print("\n" + "="*80 + "\n")
-    
-    # Test World Bank (legacy)
-    console.print("[bold]5. World Bank Data Tool (Legacy)[/bold]")
-    try:
-        wb_tool = WorldBankTool()
-        wb_result = wb_tool._run("GDP", country="KR", start_year=2019, end_year=2023)
-        console.print(Panel(wb_result, title="World Bank Result", border_style="cyan"))
-    except Exception as e:
-        console.print(f"[red]❌ World Bank 오류: {e}[/red]")
-    
-    console.print("\n" + "="*80 + "\n")
-    
     # Test Naver News
-    console.print("[bold]6. Naver News Tool[/bold]")
+    console.print("[bold]4. Naver News Tool[/bold]")
     try:
         naver_tool = NaverNewsTool()
         naver_result = naver_tool._run("인공지능", sort="date", display=3)

@@ -3,10 +3,8 @@
 from .base import FactWaveAgent
 from ..services.tools import (
     WikipediaSearchTool, 
-    SemanticScholarTool, 
-    ArxivSearchTool,
-    KOSISTool,
-    WorldBankTool
+    OpenAlexTool,  # SemanticScholar 대신 OpenAlex 사용 (rate limit 문제 해결)
+    ArxivSearchTool
 )
 
 
@@ -23,20 +21,20 @@ class AcademicAgent(FactWaveAgent):
 
 당신은 다음 도구들을 사용할 수 있습니다:
 - Wikipedia Search: 일반적인 배경 지식과 정의 검색
-- Semantic Scholar Search: 214M+ 학술 논문 검색 및 AI 요약
+- OpenAlex Academic Search: 240M+ 학술 논문 검색 (rate limit 없음)
 - ArXiv Search: CS, 물리, 수학 분야 최신 연구 논문 검색
-- KOSIS Statistics: 한국 통계청 공식 통계 데이터 (GDP, 인구, 실업률 등)
-- World Bank Data: 전 세계 국가의 개발 지표 및 경제 데이터
 
-팩트체크 시 이 도구들을 적극 활용하여 주장을 검증하세요.
-특히 경제, 사회 지표와 관련된 주장은 KOSIS나 World Bank 데이터로 검증하세요."""
+팩트체크 시 다음 순서로 모든 도구를 활용하세요:
+1. 먼저 Wikipedia로 기본 개념과 배경 지식을 확인하세요
+2. OpenAlex로 관련 학술 논문을 검색하세요 (최소 3개 이상)
+3. ArXiv로 최신 연구 동향을 확인하세요
+
+중요: 각 도구의 결과를 종합하여 다각적인 분석을 제공하세요."""
         )
         
         # 도구 초기화
         self.tools = [
             WikipediaSearchTool(),
-            SemanticScholarTool(),
-            ArxivSearchTool(),
-            KOSISTool(),
-            WorldBankTool()
+            OpenAlexTool(),  # SemanticScholar 대신 사용
+            ArxivSearchTool()
         ]

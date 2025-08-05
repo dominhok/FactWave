@@ -69,7 +69,6 @@ ws://localhost:8000/ws/factcheck
     "data": {
         "statement": "팩트체크할 문장",
         "language": "ko",
-        "priority": "speed"  # speed, accuracy, comprehensive
     }
 }
 
@@ -126,7 +125,7 @@ POST /api/v1/factcheck/quick
 Response (10초 내):
 {
     "statement": "원본 문장",
-    "quick_verdict": "LIKELY_TRU E",
+    "quick_verdict": "LIKELY_TRUE",
     "confidence": 0.78,
     "completed_agents": ["academic", "news", "logic"],
     "pending_agents": ["social", "historical", "bias"],
@@ -257,17 +256,12 @@ Response: {"status": "healthy", "timestamp": "..."}
 - 유사 문장 패턴 매칭으로 빠른 응답
 - 실시간 트렌딩 토픽 모니터링
 
-### 6.4 확장성 고려
+### 6.4 확장성 고려(추후 개발발)
 **도메인 특화 모드**
 - 의료: PubMed 중심, 임상시험 데이터 강화
 - 정치: 정부 공식 발표, 선거 관련 DB 우선
 - 과학: arXiv, Nature/Science 등 저널 중심
 - 경제: 금융 데이터, 기업 보고서 중심
-
-**다국어 지원**
-- 언어별 전용 검색 API 설정
-- 번역 API 연동 (Google Translate, Papago)
-- 문화적 맥락 고려한 편향성 분석
 
 ## 7. 실시간 응답 플로우 예시
 
@@ -275,7 +269,7 @@ Response: {"status": "healthy", "timestamp": "..."}
 입력: "2024년 한국의 출산율이 0.7명이다"
 
 === 즉시 응답 (0초) ===
-WebSocket → "팩트체크를 시작합니다. 4개 에이전트가 분석 중..." (슈퍼에이전트는 전달자 역할할)
+WebSocket → "팩트체크를 시작합니다. 4개 에이전트가 분석 중..." (슈퍼에이전트는 전달자 역할)
 Progress: 0%
 
 === 3초 후 (첫 번째 결과) ===
