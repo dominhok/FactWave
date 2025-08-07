@@ -1,0 +1,37 @@
+{
+  "chart": {
+    "title": "Trade as a share of GDP",
+    "subtitle": "Sum of exports and imports of goods and services, divided by gross domestic product, expressed as a percentage. This is also known as the \"trade openness index\".",
+    "citation": "World Bank and OECD national accounts (2025)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/trade-as-share-of-gdp",
+    "selection": [
+      "World",
+      "China",
+      "India",
+      "United States"
+    ]
+  },
+  "columns": {
+    "Trade (% of GDP)": {
+      "titleShort": "Trade (% of GDP)",
+      "titleLong": "Trade (% of GDP)",
+      "descriptionShort": "Trade in goods and services as a share of GDP, shown as a percentage.",
+      "descriptionKey": [
+        "This indicator measures a country’s total trade (exports and imports) relative to the size of its economy.",
+        "Exports of goods and services represent the value of all goods and other market services provided to the rest of the world. Imports represent the value of all goods and other market services received from the rest of the world. In both cases, they include the value of merchandise, freight, insurance, transport, travel, royalties, license fees, and other services, such as communication, construction, financial, information, business, personal, and government services."
+      ],
+      "shortUnit": "%",
+      "unit": "% of GDP",
+      "timespan": "1960-2023",
+      "type": "Numeric",
+      "owidVariableId": 1008278,
+      "shortName": "ne_trd_gnfs_zs",
+      "lastUpdated": "2025-01-24",
+      "nextUpdate": "2026-01-24",
+      "citationShort": "World Bank and OECD national accounts (2025) – processed by Our World in Data",
+      "citationLong": "World Bank and OECD national accounts (2025) – processed by Our World in Data. “Trade (% of GDP)” [dataset]. World Bank and OECD national accounts, “World Development Indicators” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1008278.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

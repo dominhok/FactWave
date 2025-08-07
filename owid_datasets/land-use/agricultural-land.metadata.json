@@ -1,0 +1,30 @@
+{
+  "chart": {
+    "title": "Agricultural land use",
+    "subtitle": "Agricultural land use is the sum of croplands and pasture – land used for grazing livestock.",
+    "citation": "Food and Agriculture Organization of the United Nations (2024)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/agricultural-land",
+    "selection": [
+      "World"
+    ]
+  },
+  "columns": {
+    "Agricultural land | 00006610 || Area | 005110 || hectares": {
+      "titleShort": "Agricultural land use",
+      "titleLong": "Agricultural land use - UN FAO",
+      "descriptionShort": "Land used for cultivation of crops and animal husbandry. The total of areas under cropland and permanent meadows and pastures.",
+      "shortUnit": "ha",
+      "unit": "hectares",
+      "timespan": "1961-2022",
+      "type": "Numeric",
+      "owidVariableId": 1016611,
+      "shortName": "agricultural_land__00006610__area__005110__hectares",
+      "lastUpdated": "2025-03-17",
+      "nextUpdate": "2026-03-17",
+      "citationShort": "Food and Agriculture Organization of the United Nations (2024) – with major processing by Our World in Data",
+      "citationLong": "Food and Agriculture Organization of the United Nations (2024) – with major processing by Our World in Data. “Agricultural land use – UN FAO” [dataset]. Food and Agriculture Organization of the United Nations, “Land, Inputs and Sustainability: Land Use” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1016611.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

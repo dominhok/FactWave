@@ -1,0 +1,35 @@
+{
+  "chart": {
+    "title": "Total number of people who received at least one dose of COVID-19 vaccine",
+    "citation": "Official data collated by Our World in Data (2024); World Health Organisation (2025)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/people-vaccinated-covid",
+    "selection": [
+      "Bangladesh",
+      "Brazil",
+      "India",
+      "Indonesia",
+      "Mexico",
+      "Nigeria",
+      "Pakistan",
+      "Russia",
+      "United States"
+    ]
+  },
+  "columns": {
+    "People vaccinated (cumulative)": {
+      "titleShort": "People vaccinated (cumulative)",
+      "titleLong": "People vaccinated (cumulative)",
+      "descriptionShort": "Total number of people who received at least one vaccine dose.",
+      "unit": "people",
+      "timespan": "",
+      "type": "Numeric",
+      "owidVariableId": 984969,
+      "shortName": "people_vaccinated",
+      "lastUpdated": "2024-08-14",
+      "citationShort": "Official data collated by Our World in Data (2024); World Health Organisation (2025) – with major processing by Our World in Data",
+      "citationLong": "Official data collated by Our World in Data (2024); World Health Organisation (2025) – with major processing by Our World in Data. “People vaccinated (cumulative)” [dataset]. Official data collated by Our World in Data, “COVID-19, vaccinations”; World Health Organisation, “COVID-19, vaccinations (WHO)” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/984969.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

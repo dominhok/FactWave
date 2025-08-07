@@ -1,0 +1,85 @@
+{
+  "chart": {
+    "title": "Annual temperature anomalies relative to the pre-industrial period",
+    "subtitle": "The difference in average land-sea surface temperature compared to the 1861-1890 mean, in degrees Celsius.",
+    "note": "The period 1861–1890 is used as the baseline to measure temperature changes relative to pre-industrial times, [as recommended by the source](https://www.metoffice.gov.uk/hadobs/indicators/index.html#:~:text=For%20global%20average%20temperatures%2C%20an%201861%2D1890%20period%20is%20sometimes%20used%20to%20show%20the%20warming%20since%20the%20%22pre%2Dindustrial%22%20period.).",
+    "citation": "Met Office Hadley Centre - HadCRUT5 (2025)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/temperature-anomaly",
+    "selection": [
+      "World"
+    ]
+  },
+  "columns": {
+    "Global average temperature anomaly relative to 1861-1890": {
+      "titleShort": "Global average temperature anomaly relative to 1861-1890",
+      "titleLong": "Global average temperature anomaly relative to 1861-1890",
+      "descriptionShort": "The difference in average land-sea surface temperature compared to the 1861-1890 mean, in degrees Celsius.",
+      "descriptionKey": [
+        "Temperature anomalies show how many degrees Celsius temperatures have changed compared to the 1861-1890 period. This baseline period is commonly used to highlight the changes in temperature since pre-industrial times, prior to major human impacts.",
+        "Temperature averages and anomalies are calculated over all land and ocean surfaces.",
+        "The data includes separate measurements for the Northern and Southern Hemispheres, which helps researchers analyze regional differences.",
+        "The global temperature anomaly is the average of both hemisphere measurements.",
+        "This data is based on the HadCRUT4 method. This method averages temperature measurements onto a fixed grid. If no data is available for a grid cell, it remains empty and adds extra uncertainty when calculating averages like the global mean.",
+        "Despite different approaches, HadCRUT4 and other methods show similar global temperature trends."
+      ],
+      "shortUnit": "°C",
+      "unit": "degrees Celsius",
+      "timespan": "1850-2025",
+      "type": "Numeric",
+      "owidVariableId": 1077871,
+      "shortName": "near_surface_temperature_anomaly",
+      "lastUpdated": "2025-07-18",
+      "nextUpdate": "2025-09-16",
+      "citationShort": "Met Office Hadley Centre - HadCRUT5 (2025) – with major processing by Our World in Data",
+      "citationLong": "Met Office Hadley Centre - HadCRUT5 (2025) – with major processing by Our World in Data. “Global average temperature anomaly relative to 1861-1890” [dataset]. Met Office Hadley Centre, “HadCRUT5 HadCRUT.5.0.2.0” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077871.metadata.json"
+    },
+    "Lower bound of the annual temperature anomaly (95% confidence interval)": {
+      "titleShort": "Lower bound of the annual temperature anomaly (95% confidence interval)",
+      "titleLong": "Lower bound of the annual temperature anomaly (95% confidence interval)",
+      "descriptionKey": [
+        "Temperature anomalies show how many degrees Celsius temperatures have changed compared to the 1861-1890 period. This baseline period is commonly used to highlight the changes in temperature since pre-industrial times, prior to major human impacts.",
+        "Temperature averages and anomalies are calculated over all land and ocean surfaces.",
+        "The data includes separate measurements for the Northern and Southern Hemispheres, which helps researchers analyze regional differences.",
+        "The global temperature anomaly is the average of both hemisphere measurements.",
+        "This data is based on the HadCRUT4 method. This method averages temperature measurements onto a fixed grid. If no data is available for a grid cell, it remains empty and adds extra uncertainty when calculating averages like the global mean.",
+        "Despite different approaches, HadCRUT4 and other methods show similar global temperature trends."
+      ],
+      "shortUnit": "°C",
+      "unit": "degrees Celsius",
+      "timespan": "1850-2025",
+      "type": "Numeric",
+      "owidVariableId": 1077873,
+      "shortName": "near_surface_temperature_anomaly_lower",
+      "lastUpdated": "2025-07-18",
+      "nextUpdate": "2025-09-16",
+      "citationShort": "Met Office Hadley Centre - HadCRUT5 (2025) – with major processing by Our World in Data",
+      "citationLong": "Met Office Hadley Centre - HadCRUT5 (2025) – with major processing by Our World in Data. “Lower bound of the annual temperature anomaly (95% confidence interval)” [dataset]. Met Office Hadley Centre, “HadCRUT5 HadCRUT.5.0.2.0” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077873.metadata.json"
+    },
+    "Upper bound of the annual temperature anomaly (95% confidence interval)": {
+      "titleShort": "Upper bound of the annual temperature anomaly (95% confidence interval)",
+      "titleLong": "Upper bound of the annual temperature anomaly (95% confidence interval)",
+      "descriptionKey": [
+        "Temperature anomalies show how many degrees Celsius temperatures have changed compared to the 1861-1890 period. This baseline period is commonly used to highlight the changes in temperature since pre-industrial times, prior to major human impacts.",
+        "Temperature averages and anomalies are calculated over all land and ocean surfaces.",
+        "The data includes separate measurements for the Northern and Southern Hemispheres, which helps researchers analyze regional differences.",
+        "The global temperature anomaly is the average of both hemisphere measurements.",
+        "This data is based on the HadCRUT4 method. This method averages temperature measurements onto a fixed grid. If no data is available for a grid cell, it remains empty and adds extra uncertainty when calculating averages like the global mean.",
+        "Despite different approaches, HadCRUT4 and other methods show similar global temperature trends."
+      ],
+      "shortUnit": "°C",
+      "unit": "degrees Celsius",
+      "timespan": "1850-2025",
+      "type": "Numeric",
+      "owidVariableId": 1077875,
+      "shortName": "near_surface_temperature_anomaly_upper",
+      "lastUpdated": "2025-07-18",
+      "nextUpdate": "2025-09-16",
+      "citationShort": "Met Office Hadley Centre - HadCRUT5 (2025) – with major processing by Our World in Data",
+      "citationLong": "Met Office Hadley Centre - HadCRUT5 (2025) – with major processing by Our World in Data. “Upper bound of the annual temperature anomaly (95% confidence interval)” [dataset]. Met Office Hadley Centre, “HadCRUT5 HadCRUT.5.0.2.0” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077875.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

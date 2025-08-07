@@ -1,0 +1,51 @@
+{
+  "chart": {
+    "title": "Annual GDP growth",
+    "subtitle": "Annual percent change in [gross domestic product](#dod:gdp). This data is adjusted for inflation.",
+    "citation": "International Monetary Fund (2025)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/real-gdp-growth",
+    "selection": [
+      "United States",
+      "Japan",
+      "India",
+      "China",
+      "United Kingdom",
+      "Germany"
+    ]
+  },
+  "columns": {
+    "Gross domestic product, constant prices - Percent change - Observations": {
+      "titleShort": "Gross domestic product, constant prices - Percent change - Observations",
+      "titleLong": "Gross domestic product, constant prices - Percent change - Observations",
+      "descriptionShort": "Annual percent change in gross domestic product. This data is adjusted for inflation.",
+      "shortUnit": "%",
+      "unit": "%",
+      "timespan": "1980-2024",
+      "type": "Numeric",
+      "owidVariableId": 1027759,
+      "shortName": "gross_domestic_product__constant_prices__percent_change_observation",
+      "lastUpdated": "2025-04-25",
+      "nextUpdate": "2026-04-25",
+      "citationShort": "International Monetary Fund (2025) – with minor processing by Our World in Data",
+      "citationLong": "International Monetary Fund (2025) – with minor processing by Our World in Data. “Gross domestic product, constant prices - Percent change - Observations” [dataset]. International Monetary Fund, “World Economic Outlook (WEO) April 2025” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1027759.metadata.json"
+    },
+    "Gross domestic product, constant prices - Percent change - Forecasts": {
+      "titleShort": "Gross domestic product, constant prices - Percent change - Forecasts",
+      "titleLong": "Gross domestic product, constant prices - Percent change - Forecasts",
+      "descriptionShort": "Near-term projections of the annual percent change in gross domestic product. This data is adjusted for inflation.",
+      "shortUnit": "%",
+      "unit": "%",
+      "timespan": "2010-2030",
+      "type": "Numeric",
+      "owidVariableId": 1027758,
+      "shortName": "gross_domestic_product__constant_prices__percent_change_forecast",
+      "lastUpdated": "2025-04-25",
+      "nextUpdate": "2026-04-25",
+      "citationShort": "International Monetary Fund (2025) – with minor processing by Our World in Data",
+      "citationLong": "International Monetary Fund (2025) – with minor processing by Our World in Data. “Gross domestic product, constant prices - Percent change - Forecasts” [dataset]. International Monetary Fund, “World Economic Outlook (WEO) April 2025” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1027758.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

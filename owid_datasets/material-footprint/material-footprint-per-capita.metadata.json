@@ -1,0 +1,30 @@
+{
+  "chart": {
+    "title": "Material footprint per capita",
+    "subtitle": "Material footprint is the quantity of material needed to meet a country's material demand. It is material production, adjusted for trade. The total material footprint is the sum of the material footprint for biomass, fossil fuels, metal ores, and non-metal ores, given in tonnes per year.",
+    "citation": "United Nations Environment Programme",
+    "originalChartUrl": "https://ourworldindata.org/grapher/material-footprint-per-capita",
+    "selection": [
+      "World"
+    ]
+  },
+  "columns": {
+    "12.2.1 - Material footprint per capita, by type of raw material (tonnes) - EN_MAT_FTPRPC": {
+      "titleShort": "12.2.1 - Material footprint per capita, by type of raw material (tonnes) - EN_MAT_FTPRPC",
+      "titleLong": "12.2.1 - Material footprint per capita, by type of raw material (tonnes) - EN_MAT_FTPRPC",
+      "descriptionShort": "Material footprint per capita, by type of raw material (tonnes)",
+      "shortUnit": "",
+      "unit": "tonnes",
+      "timespan": "2000-2022",
+      "type": "Numeric",
+      "owidVariableId": 992778,
+      "shortName": "_12_2_1__en_mat_ftprpc",
+      "lastUpdated": "2024-08-27",
+      "nextUpdate": "2026-08-27",
+      "citationShort": "United Nations Environment Programme – processed by Our World in Data",
+      "citationLong": "United Nations Environment Programme – processed by Our World in Data. “12.2.1 - Material footprint per capita, by type of raw material (tonnes) - EN_MAT_FTPRPC” [dataset]. United Nations Environment Programme, “WESR / Global Material Flows Database” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/992778.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

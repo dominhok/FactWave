@@ -1,0 +1,59 @@
+{
+  "chart": {
+    "title": "Sea level rise",
+    "subtitle": "Global mean sea level rise is measured relative to the 1993 - 2008 average sea level. This is shown as three series: the widely-cited Church & White dataset; the University of Hawaii Sea Level Center (UHLSC); and the average of the two.",
+    "citation": "NOAA Climate.gov (2022)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/sea-level",
+    "selection": [
+      "World"
+    ]
+  },
+  "columns": {
+    "Global sea level according to Church and White (2011)": {
+      "titleShort": "Global sea level according to Church and White (2011)",
+      "titleLong": "Global sea level according to Church and White (2011)",
+      "shortUnit": "mm",
+      "unit": "millimeters",
+      "timespan": "",
+      "type": "Numeric",
+      "owidVariableId": 1077869,
+      "shortName": "sea_level_church_and_white_2011",
+      "lastUpdated": "2025-07-18",
+      "nextUpdate": "2025-09-16",
+      "citationShort": "NOAA Climate.gov (2022) – processed by Our World in Data",
+      "citationLong": "NOAA Climate.gov (2022) – processed by Our World in Data. “Global sea level according to Church and White (2011)” [dataset]. NOAA Climate.gov, “Climate Change: Global Sea Level” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077869.metadata.json"
+    },
+    "Global sea level according to UHSLC": {
+      "titleShort": "Global sea level according to UHSLC",
+      "titleLong": "Global sea level according to UHSLC",
+      "shortUnit": "mm",
+      "unit": "millimeters",
+      "timespan": "",
+      "type": "Numeric",
+      "owidVariableId": 1077872,
+      "shortName": "sea_level_uhslc",
+      "lastUpdated": "2025-07-18",
+      "nextUpdate": "2025-09-16",
+      "citationShort": "NOAA Climate.gov (2022) – processed by Our World in Data",
+      "citationLong": "NOAA Climate.gov (2022) – processed by Our World in Data. “Global sea level according to UHSLC” [dataset]. NOAA Climate.gov, “Climate Change: Global Sea Level” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077872.metadata.json"
+    },
+    "Global sea level as an average of Church and White (2011) and UHSLC data": {
+      "titleShort": "Global sea level as an average of Church and White (2011) and UHSLC data",
+      "titleLong": "Global sea level as an average of Church and White (2011) and UHSLC data",
+      "shortUnit": "mm",
+      "unit": "millimeters",
+      "timespan": "",
+      "type": "Numeric",
+      "owidVariableId": 1077874,
+      "shortName": "sea_level_average",
+      "lastUpdated": "2025-07-18",
+      "nextUpdate": "2025-09-16",
+      "citationShort": "NOAA Climate.gov (2022) – processed by Our World in Data",
+      "citationLong": "NOAA Climate.gov (2022) – processed by Our World in Data. “Global sea level as an average of Church and White (2011) and UHSLC data” [dataset]. NOAA Climate.gov, “Climate Change: Global Sea Level” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077874.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

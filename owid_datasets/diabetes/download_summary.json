@@ -1,0 +1,24 @@
+{
+  "id": "diabetes",
+  "chart_slug": "diabetes-prevalence",
+  "status": "success",
+  "files": {
+    "metadata": "owid_data/diabetes/diabetes-prevalence.metadata.json",
+    "csv": "owid_data/diabetes/diabetes-prevalence.csv"
+  },
+  "stats": {
+    "rows": 463,
+    "columns": 4,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Diabetes prevalence (% of population ages 20 to 79)"
+    ],
+    "time_column": "Year",
+    "time_range": "2000-2021",
+    "entity_column": "Entity",
+    "entities": 226,
+    "has_korea": true
+  }
+}

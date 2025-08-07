@@ -1,0 +1,25 @@
+{
+  "id": "forest-area",
+  "chart_slug": "forest-area-as-share-of-land-area",
+  "status": "success",
+  "files": {
+    "metadata": "owid_data/forest-area/download_summary.json",
+    "csv": "owid_data/forest-area/forest-area-as-share-of-land-area.csv"
+  },
+  "stats": {
+    "rows": 1000,
+    "columns": 5,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Share of land covered by forest",
+      "1039812-annotations"
+    ],
+    "time_column": "Year",
+    "time_range": "1990-2020",
+    "entity_column": "Entity",
+    "entities": 33,
+    "has_korea": false
+  }
+}

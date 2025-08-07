@@ -1,0 +1,37 @@
+{
+  "chart": {
+    "title": "Red List Index",
+    "subtitle": "The [Red List Index](#dod:red_list_index) shows trends in overall [extinction risk](#dod:extinction_risk) for groups of species. It is an index between 0 and 1. A value of 1 indicates that there is no current extinction risk to any of the included species. A value of 0 would mean that all included species are extinct.",
+    "note": "Extinction risk estimates for mammals, birds, cycads, amphibians and corals are used to calculate the Red List Index. National and regional Red List Indices are calculated by weighting by the fraction of each species' distribution occurring within them.",
+    "citation": "BirdLife International and IUCN",
+    "originalChartUrl": "https://ourworldindata.org/grapher/red-list-index",
+    "selection": [
+      "World",
+      "Europe (UN)",
+      "Oceania (UN)",
+      "Northern America (UN)",
+      "Latin America and the Caribbean (UN)",
+      "Northern Africa (UN)",
+      "Sub-Saharan Africa (UN)"
+    ]
+  },
+  "columns": {
+    "15.5.1 - Red List Index - ER_RSK_LST": {
+      "titleShort": "15.5.1 - Red List Index - ER_RSK_LST",
+      "titleLong": "15.5.1 - Red List Index - ER_RSK_LST",
+      "descriptionShort": "Red List Index",
+      "shortUnit": "",
+      "unit": "index",
+      "timespan": "1993-2024",
+      "type": "Numeric",
+      "owidVariableId": 993745,
+      "shortName": "_15_5_1__er_rsk_lst",
+      "lastUpdated": "2024-08-27",
+      "nextUpdate": "2026-08-27",
+      "citationShort": "BirdLife International and IUCN – processed by Our World in Data",
+      "citationLong": "BirdLife International and IUCN – processed by Our World in Data. “15.5.1 - Red List Index - ER_RSK_LST” [dataset]. BirdLife International and IUCN, “Data from multiple sources” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/993745.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

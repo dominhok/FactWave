@@ -1,0 +1,24 @@
+{
+  "id": "life-expectancy",
+  "chart_slug": "life-expectancy",
+  "status": "success",
+  "files": {
+    "metadata": "owid_data/life-expectancy/download_summary.json",
+    "csv": "owid_data/life-expectancy/life-expectancy.csv"
+  },
+  "stats": {
+    "rows": 1000,
+    "columns": 4,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Period life expectancy at birth"
+    ],
+    "time_column": "Year",
+    "time_range": "1770-2023",
+    "entity_column": "Entity",
+    "entities": 14,
+    "has_korea": false
+  }
+}

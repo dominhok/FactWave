@@ -1,0 +1,25 @@
+{
+  "id": "sea-level",
+  "chart_slug": "sea-level-rise",
+  "status": "success",
+  "files": {
+    "csv": "owid_data/sea-level/sea-level.csv",
+    "metadata": "owid_data/sea-level/sea-level.metadata.json"
+  },
+  "stats": {
+    "rows": 563,
+    "columns": 6,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Day",
+      "Global sea level according to Church and White (2011)",
+      "Global sea level according to UHSLC",
+      "Global sea level as an average of Church and White (2011) and UHSLC data"
+    ],
+    "time_column": "Day",
+    "entity_column": "Entity",
+    "entities": 1,
+    "has_korea": false
+  }
+}

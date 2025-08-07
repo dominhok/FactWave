@@ -1,0 +1,40 @@
+{
+  "chart": {
+    "title": "Carbon intensity of electricity generation",
+    "subtitle": "Carbon intensity is measured in grams of [carbon dioxide-equivalents](#dod:carbondioxideequivalents) emitted per [kilowatt-hour](#dod:watt-hours) of electricity generated.",
+    "citation": "Ember (2025); Energy Institute - Statistical Review of World Energy (2025)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/carbon-intensity-electricity",
+    "selection": [
+      "Austria",
+      "France",
+      "EU-27",
+      "Sweden",
+      "Poland",
+      "Italy",
+      "Netherlands",
+      "World",
+      "China",
+      "South Africa"
+    ]
+  },
+  "columns": {
+    "Carbon intensity of electricity - gCO2/kWh": {
+      "titleShort": "Carbon intensity of electricity generation",
+      "titleLong": "Carbon intensity of electricity generation - Ember",
+      "descriptionShort": "[Greenhouse gases](#dod:ghgemissions) emitted per unit of generated electricity, measured in grams of [CO₂ equivalents](#dod:carbondioxideequivalents) per [kilowatt-hour](#dod:watt-hours).",
+      "descriptionProcessing": "- While the Energy Institute (EI) provides a longer time series (dating back to 1965) than Ember (dating back only to 1990 for European countries and 2000 for other countries), EI does not cover all countries or all sources of electricity (for example, generation from bioenergy is missing). Therefore, when data from Ember is available for a given country and year, we use it as the primary data source. Where Ember data is unavailable, we supplement it with data from EI.",
+      "shortUnit": "gCO₂",
+      "unit": "grams of CO₂ equivalents per kilowatt-hour",
+      "timespan": "2000-2024",
+      "type": "Numeric",
+      "owidVariableId": 1077602,
+      "shortName": "co2_intensity__gco2_kwh",
+      "lastUpdated": "2025-06-27",
+      "nextUpdate": "2026-06-27",
+      "citationShort": "Ember (2025); Energy Institute - Statistical Review of World Energy (2025) – with major processing by Our World in Data",
+      "citationLong": "Ember (2025); Energy Institute - Statistical Review of World Energy (2025) – with major processing by Our World in Data. “Carbon intensity of electricity generation – Ember” [dataset]. Ember, “Yearly Electricity Data Europe”; Ember, “Yearly Electricity Data”; Energy Institute, “Statistical Review of World Energy” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077602.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

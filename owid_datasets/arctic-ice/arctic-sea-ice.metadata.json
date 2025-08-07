@@ -1,0 +1,44 @@
+{
+  "chart": {
+    "title": "Arctic sea ice extent",
+    "subtitle": "The minimum and maximum sea ice extent typically occur in September and February each year.",
+    "citation": "National Snow and Ice Data Center - Sea Ice Index (2025)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/arctic-sea-ice",
+    "selection": [
+      "Arctic Ocean"
+    ]
+  },
+  "columns": {
+    "Minimum Arctic sea ice extent": {
+      "titleShort": "Minimum Arctic sea ice extent",
+      "titleLong": "Minimum Arctic sea ice extent",
+      "shortUnit": "million km²",
+      "unit": "million square kilometers",
+      "timespan": "1979-2024",
+      "type": "Numeric",
+      "owidVariableId": 1077857,
+      "shortName": "arctic_sea_ice_extent_min",
+      "lastUpdated": "2025-07-18",
+      "nextUpdate": "2025-09-16",
+      "citationShort": "National Snow and Ice Data Center - Sea Ice Index (2025) – with minor processing by Our World in Data",
+      "citationLong": "National Snow and Ice Data Center - Sea Ice Index (2025) – with minor processing by Our World in Data. “Minimum Arctic sea ice extent” [dataset]. National Snow and Ice Data Center, “Sea Ice Index Version 3” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077857.metadata.json"
+    },
+    "Maximum Arctic sea ice extent": {
+      "titleShort": "Maximum Arctic sea ice extent",
+      "titleLong": "Maximum Arctic sea ice extent",
+      "shortUnit": "million km²",
+      "unit": "million square kilometers",
+      "timespan": "1979-2025",
+      "type": "Numeric",
+      "owidVariableId": 1077855,
+      "shortName": "arctic_sea_ice_extent_max",
+      "lastUpdated": "2025-07-18",
+      "nextUpdate": "2025-09-16",
+      "citationShort": "National Snow and Ice Data Center - Sea Ice Index (2025) – with minor processing by Our World in Data",
+      "citationLong": "National Snow and Ice Data Center - Sea Ice Index (2025) – with minor processing by Our World in Data. “Maximum Arctic sea ice extent” [dataset]. National Snow and Ice Data Center, “Sea Ice Index Version 3” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077855.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

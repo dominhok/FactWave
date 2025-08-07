@@ -1,0 +1,24 @@
+{
+  "id": "suicide-rates",
+  "chart_slug": "suicide-mortality-rate",
+  "status": "success",
+  "files": {
+    "metadata": "owid_data/suicide-rates/download_summary.json",
+    "csv": "owid_data/suicide-rates/death-rate-from-suicides-ghe.csv"
+  },
+  "stats": {
+    "rows": 1000,
+    "columns": 4,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Death rate from self-harm among both sexes"
+    ],
+    "time_column": "Year",
+    "time_range": "2000-2021",
+    "entity_column": "Entity",
+    "entities": 46,
+    "has_korea": false
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "temperature-anomaly",
+  "chart_slug": "temperature-anomaly",
+  "status": "success",
+  "files": {
+    "metadata": "owid_data/temperature-anomaly/temperature-anomaly.metadata.json",
+    "csv": "owid_data/temperature-anomaly/temperature-anomaly.csv"
+  },
+  "stats": {
+    "rows": 528,
+    "columns": 6,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Global average temperature anomaly relative to 1861-1890",
+      "Lower bound of the annual temperature anomaly (95% confidence interval)",
+      "Upper bound of the annual temperature anomaly (95% confidence interval)"
+    ],
+    "time_column": "Year",
+    "time_range": "1850-2025",
+    "entity_column": "Entity",
+    "entities": 3,
+    "has_korea": false
+  }
+}

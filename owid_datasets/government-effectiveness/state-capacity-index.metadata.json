@@ -1,0 +1,36 @@
+{
+  "chart": {
+    "title": "State capacity index",
+    "subtitle": "The index captures the extent to which the state controls its territory, sustainably raises sufficient resources, and has skilled and impartial security forces and public servants. Higher scores mean more capacity.",
+    "citation": "Jonathan Hanson and Rachel Sigman (2021); Population based on various sources (2023)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/state-capacity-index",
+    "selection": [
+      "Bolivia",
+      "Cambodia",
+      "Egypt",
+      "Germany",
+      "Uganda",
+      "Vietnam"
+    ]
+  },
+  "columns": {
+    "State capacity estimate": {
+      "titleShort": "State capacity",
+      "titleLong": "State capacity",
+      "descriptionShort": "Measures state capacity by combining 21 different indicators related to three key dimensions: extractive capacity, coercive capacity, and administrative capacity. Higher values indicate greater state capacity.",
+      "descriptionProcessing": "Regional aggregations were included, where at least a 70% of the countries in the region had data available.",
+      "shortUnit": "",
+      "unit": "",
+      "timespan": "1960-2015",
+      "type": "Numeric",
+      "owidVariableId": 815581,
+      "shortName": "capacity",
+      "lastUpdated": "2023-10-19",
+      "nextUpdate": "2025-09-07",
+      "citationShort": "Jonathan Hanson and Rachel Sigman (2021); Population based on various sources (2023) – with major processing by Our World in Data",
+      "citationLong": "Jonathan Hanson and Rachel Sigman (2021); Population based on various sources (2023) – with major processing by Our World in Data. “State capacity” [dataset]. Jonathan Hanson and Rachel Sigman, “State Capacity Dataset Version 1”; Various sources, “Population” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/815581.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

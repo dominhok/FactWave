@@ -1,0 +1,37 @@
+{
+  "chart": {
+    "title": "Solar power generation",
+    "subtitle": "Electricity generation from solar, measured in [terawatt-hours](#dod:watt-hours).",
+    "citation": "Ember (2025); Energy Institute - Statistical Review of World Energy (2025)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/solar-energy-consumption",
+    "selection": [
+      "India",
+      "China",
+      "Australia",
+      "United States",
+      "South Africa",
+      "Spain",
+      "World"
+    ]
+  },
+  "columns": {
+    "Electricity from solar - TWh": {
+      "titleShort": "Electricity generation from solar power",
+      "titleLong": "Electricity generation from solar power",
+      "descriptionShort": "Measured in [terawatt-hours](#dod:watt-hours).",
+      "descriptionProcessing": "- While the Energy Institute (EI) provides a longer time series (dating back to 1965) than Ember (dating back only to 1990 for European countries and 2000 for other countries), EI does not cover all countries or all sources of electricity (for example, generation from bioenergy is missing). Therefore, when data from Ember is available for a given country and year, we use it as the primary data source. Where Ember data is unavailable, we supplement it with data from EI.",
+      "shortUnit": "TWh",
+      "unit": "terawatt-hours",
+      "timespan": "1965-2024",
+      "type": "Numeric",
+      "owidVariableId": 1077742,
+      "shortName": "solar_generation__twh",
+      "lastUpdated": "2025-06-27",
+      "nextUpdate": "2026-06-27",
+      "citationShort": "Ember (2025); Energy Institute - Statistical Review of World Energy (2025) – with major processing by Our World in Data",
+      "citationLong": "Ember (2025); Energy Institute - Statistical Review of World Energy (2025) – with major processing by Our World in Data. “Electricity generation from solar power” [dataset]. Ember, “Yearly Electricity Data Europe”; Ember, “Yearly Electricity Data”; Energy Institute, “Statistical Review of World Energy” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077742.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

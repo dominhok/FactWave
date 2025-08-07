@@ -1,0 +1,44 @@
+{
+  "chart": {
+    "title": "Life expectancy",
+    "citation": "Riley (2005); Zijdeman et al. (2015); HMD (2024); UN WPP (2024)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/life-expectancy",
+    "selection": [
+      "World",
+      "Americas",
+      "Europe",
+      "Africa",
+      "Asia",
+      "Oceania"
+    ]
+  },
+  "columns": {
+    "Period life expectancy at birth": {
+      "titleShort": "Life expectancy",
+      "titleLong": "Life expectancy - Riley; Zijdeman et al.; HMD; UN WPP – Long-run data",
+      "descriptionShort": "[Period life expectancy](#dod:period-life-expectancy) is the number of years the average person born in a certain year would live if they experienced the same chances of dying at each age as people did that year.",
+      "descriptionKey": [
+        "Across the world, people are living longer. In 1900, the global average life expectancy was 32 years. By 2023, this had more than doubled to 73 years.",
+        "Countries around the world made big improvements, and life expectancy more than doubled in every region. This wasn’t just due to falling child mortality; people started living longer at all ages.",
+        "Even after World War II, there have been large drops in life expectancy, such as during the Great Leap Forward famine in China, the HIV/AIDS epidemic in sub-Saharan Africa, the Rwandan genocide, or the COVID-19 pandemic.",
+        "This chart shows long-run estimates of life expectancy compiled by our team from several data sources.",
+        "Period life expectancy is an indicator that summarizes death rates across all age groups in one particular year. It shows how long the average baby born in that year would be expected to live if they experienced the same chances of dying at each age as people did in that year.",
+        "Before 1950, for country-level data, we rely on the [Human Mortality Database (2024)](https://www.mortality.org/Data/ZippedDataFiles) combined with [Zijdeman (2015)](https://clio-infra.eu/Indicators/LifeExpectancyatBirthTotal.html). For regional data, we use [Riley (2005)](https://doi.org/10.1111/j.1728-4457.2005.00083.x). From 1950 onward, we use the [United Nations World Population Prospects (2024)](https://population.un.org/wpp/downloads).",
+        "Detailed information on the source of each data point can be found on [this page](https://docs.google.com/spreadsheets/d/1LnrU1V3p2wq7sAPY4AHRdH1urol3cKev7prEvlLfSU4/edit?gid=0#gid=0)."
+      ],
+      "descriptionProcessing": "This chart combines data from several sources. For country-level data before 1950, we use the Human Mortality Database (2024) data and Zijdeman et al. (2015). For country-years where these sources overlap, we use the Human Mortality Database.\n\nFor regional data, before 1950, we use Riley's (2005) estimates.\n\nFrom 1950 onwards, we use the United Nations World Population Prospects (2024) for both country-level and regional data.\n\nDetailed information on the source of each data point can be found on [this page](https://docs.google.com/spreadsheets/d/1LnrU1V3p2wq7sAPY4AHRdH1urol3cKev7prEvlLfSU4/edit?gid=0#gid=0).",
+      "shortUnit": "years",
+      "unit": "years",
+      "timespan": "1543-2023",
+      "type": "Numeric",
+      "owidVariableId": 1084500,
+      "shortName": "life_expectancy_0",
+      "lastUpdated": "2024-12-03",
+      "nextUpdate": "2025-12-03",
+      "citationShort": "Riley (2005); Zijdeman et al. (2015); HMD (2024); UN WPP (2024) – with major processing by Our World in Data",
+      "citationLong": "Riley (2005); Zijdeman et al. (2015); HMD (2024); UN WPP (2024) – with major processing by Our World in Data. “Life expectancy – Riley; Zijdeman et al.; HMD; UN WPP – Long-run data” [dataset]. Human Mortality Database, “Human Mortality Database”; United Nations, “World Population Prospects”; Zijdeman et al., “Life Expectancy at birth v2”; James C. Riley, “Estimates of Regional and Global Life Expectancy, 1800-2001” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1084500.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

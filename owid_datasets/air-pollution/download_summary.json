@@ -1,0 +1,24 @@
+{
+  "id": "air-pollution",
+  "chart_slug": "pm25-air-pollution",
+  "status": "success",
+  "files": {
+    "csv": "owid_data/air-pollution/pm25-air-pollution.csv",
+    "metadata": "owid_data/air-pollution/pm25-air-pollution.metadata.json"
+  },
+  "stats": {
+    "rows": 1000,
+    "columns": 4,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Concentrations of fine particulate matter (PM2.5) - Residence area type: Total"
+    ],
+    "time_column": "Year",
+    "time_range": "2010-2019",
+    "entity_column": "Entity",
+    "entities": 100,
+    "has_korea": false
+  }
+}

@@ -1,0 +1,464 @@
+Entity,Code,Year,Diabetes prevalence (% of population ages 20 to 79)
+Afghanistan,AFG,2011,7.6
+Afghanistan,AFG,2021,10.9
+Albania,ALB,2011,2.8
+Albania,ALB,2021,10.2
+Algeria,DZA,2011,7
+Algeria,DZA,2021,7.1
+American Samoa,ASM,2021,20.3
+Andorra,AND,2011,5.4
+Andorra,AND,2021,9.7
+Angola,AGO,2011,2.9
+Angola,AGO,2021,4.6
+Antigua and Barbuda,ATG,2011,12.5
+Antigua and Barbuda,ATG,2021,11.7
+Argentina,ARG,2011,5.5
+Argentina,ARG,2021,5.4
+Armenia,ARM,2011,8.5
+Armenia,ARM,2021,5.6
+Aruba,ABW,2000,12.1
+Aruba,ABW,2011,12.4
+Aruba,ABW,2021,4.3
+Australia,AUS,2000,0
+Australia,AUS,2011,6.6
+Australia,AUS,2021,6.4
+Austria,AUT,2011,6.6
+Austria,AUT,2021,4.6
+Azerbaijan,AZE,2011,2.8
+Azerbaijan,AZE,2021,5.6
+Bahamas,BHS,2011,12.1
+Bahamas,BHS,2021,8.8
+Bahrain,BHR,2000,14.8
+Bahrain,BHR,2011,19.5
+Bahrain,BHR,2021,11.3
+Bangladesh,BGD,2011,10.5
+Bangladesh,BGD,2021,14.2
+Barbados,BRB,2000,13.2
+Barbados,BRB,2011,12.4
+Barbados,BRB,2021,14
+Belarus,BLR,2011,8
+Belarus,BLR,2021,5.6
+Belgium,BEL,2011,4.8
+Belgium,BEL,2021,3.6
+Belize,BLZ,2011,17
+Belize,BLZ,2021,14.5
+Benin,BEN,2011,2
+Benin,BEN,2021,1.1
+Bermuda,BMU,2000,12.1
+Bermuda,BMU,2011,12
+Bermuda,BMU,2021,13
+Bhutan,BTN,2011,5.7
+Bhutan,BTN,2021,10.4
+Bolivia,BOL,2011,6.6
+Bolivia,BOL,2021,5.5
+Bosnia and Herzegovina,BIH,2011,7.5
+Bosnia and Herzegovina,BIH,2021,9.1
+Botswana,BWA,2011,10.8
+Botswana,BWA,2021,5.2
+Brazil,BRA,2011,10.1
+Brazil,BRA,2021,8.8
+British Virgin Islands,VGB,2000,12.1
+British Virgin Islands,VGB,2011,8.6
+British Virgin Islands,VGB,2021,8.7
+Brunei,BRN,2011,9.4
+Brunei,BRN,2021,11.1
+Bulgaria,BGR,2011,6.7
+Bulgaria,BGR,2021,7.4
+Burkina Faso,BFA,2011,3
+Burkina Faso,BFA,2021,2.1
+Burundi,BDI,2011,2.7
+Burundi,BDI,2021,6.5
+Cambodia,KHM,2011,2.9
+Cambodia,KHM,2021,7.3
+Cameroon,CMR,2000,0
+Cameroon,CMR,2011,6.1
+Cameroon,CMR,2021,5.5
+Canada,CAN,2011,8.4
+Canada,CAN,2021,7.7
+Cape Verde,CPV,2011,5.4
+Cape Verde,CPV,2021,2.1
+Cayman Islands,CYM,2000,12.1
+Cayman Islands,CYM,2011,12
+Cayman Islands,CYM,2021,13
+Central African Republic,CAF,2011,3.2
+Central African Republic,CAF,2021,5.8
+Chad,TCD,2011,3.9
+Chad,TCD,2021,5.8
+Channel Islands,OWID_CIS,2011,4.9
+Channel Islands,OWID_CIS,2021,6.3
+Chile,CHL,2011,9.5
+Chile,CHL,2021,10.8
+China,CHN,2011,8.8
+China,CHN,2021,10.6
+Colombia,COL,2011,9.8
+Colombia,COL,2021,8.3
+Comoros,COM,2011,8.4
+Comoros,COM,2021,11.7
+Congo,COG,2011,5.5
+Congo,COG,2021,5.5
+Costa Rica,CRI,2011,9.6
+Costa Rica,CRI,2021,8.8
+Cote d'Ivoire,CIV,2011,4.9
+Cote d'Ivoire,CIV,2021,2.1
+Croatia,HRV,2011,5.2
+Croatia,HRV,2021,4.8
+Cuba,CUB,2011,9.4
+Cuba,CUB,2021,7.6
+Curacao,CUW,2021,11.7
+Cyprus,CYP,2011,9.3
+Cyprus,CYP,2021,8.6
+Czechia,CZE,2000,11.7
+Czechia,CZE,2011,5.3
+Czechia,CZE,2021,7.1
+Democratic Republic of Congo,COD,2011,3.1
+Democratic Republic of Congo,COD,2021,5.8
+Denmark,DNK,2011,5.6
+Denmark,DNK,2021,5.3
+Djibouti,DJI,2011,6.3
+Djibouti,DJI,2021,7.4
+Dominica,DMA,2011,8.9
+Dominica,DMA,2021,11.7
+Dominican Republic,DOM,2011,8.1
+Dominican Republic,DOM,2021,10.5
+East Asia and Pacific (WB),,2011,8.024907
+East Asia and Pacific (WB),,2021,9.870061
+East Timor,TLS,2011,7.5
+East Timor,TLS,2021,8.6
+Ecuador,ECU,2011,6.6
+Ecuador,ECU,2021,4.4
+Egypt,EGY,2011,16.6
+Egypt,EGY,2021,20.9
+El Salvador,SLV,2011,9.4
+El Salvador,SLV,2021,6.3
+Equatorial Guinea,GNQ,2011,4.2
+Equatorial Guinea,GNQ,2021,5.5
+Eritrea,ERI,2011,3.6
+Eritrea,ERI,2021,6.5
+Estonia,EST,2011,7
+Estonia,EST,2021,6.5
+Eswatini,SWZ,2011,3.1
+Eswatini,SWZ,2021,4.6
+Ethiopia,ETH,2011,3.4
+Ethiopia,ETH,2021,5
+Europe and Central Asia (WB),,2011,6.545224
+Europe and Central Asia (WB),,2021,7.0395927
+European Union (27),,2011,6.0188117
+European Union (27),,2021,6.6075196
+Faeroe Islands,,2021,3.8
+Fiji,FJI,2011,10.9
+Fiji,FJI,2021,17.7
+Finland,FIN,2011,5.8
+Finland,FIN,2021,6.1
+France,FRA,2011,5.4
+France,FRA,2021,5.3
+French Polynesia,PYF,2011,8.6
+French Polynesia,PYF,2021,25.2
+Gabon,GAB,2011,10.3
+Gabon,GAB,2021,5.5
+Gambia,GMB,2011,2
+Gambia,GMB,2021,1.9
+Georgia,GEO,2011,2.8
+Georgia,GEO,2021,5.7
+Germany,DEU,2011,5.3
+Germany,DEU,2021,6.9
+Ghana,GHA,2011,5
+Ghana,GHA,2021,2.6
+Greece,GRC,2011,5.1
+Greece,GRC,2021,6.4
+Greenland,GRL,2021,3.3
+Grenada,GRD,2000,12.1
+Grenada,GRD,2011,8.6
+Grenada,GRD,2021,12.6
+Guam,GUM,2011,8.6
+Guam,GUM,2021,19.1
+Guatemala,GTM,2011,9.3
+Guatemala,GTM,2021,13.1
+Guinea,GIN,2011,4.4
+Guinea,GIN,2021,2.1
+Guinea-Bissau,GNB,2011,3
+Guinea-Bissau,GNB,2021,2.1
+Guyana,GUY,2011,16.7
+Guyana,GUY,2021,11.7
+Haiti,HTI,2011,6.6
+Haiti,HTI,2021,8.9
+High-income countries,,2011,7.9737477
+High-income countries,,2021,8.066779
+Honduras,HND,2011,6.7
+Honduras,HND,2021,5.1
+Hong Kong,HKG,2000,12.1
+Hong Kong,HKG,2011,7.6
+Hong Kong,HKG,2021,7.8
+Hungary,HUN,2011,6
+Hungary,HUN,2021,7
+Iceland,ISL,2011,3.2
+Iceland,ISL,2021,5.5
+India,IND,2011,9
+India,IND,2021,9.6
+Indonesia,IDN,2011,5.1
+Indonesia,IDN,2021,10.6
+Iran,IRN,2011,11.1
+Iran,IRN,2021,9.1
+Iraq,IRQ,2011,9.1
+Iraq,IRQ,2021,10.7
+Ireland,IRL,2011,5.2
+Ireland,IRL,2021,3
+Isle of Man,IMN,2021,6.3
+Israel,ISR,2011,7.4
+Israel,ISR,2021,8.5
+Italy,ITA,2011,5.1
+Italy,ITA,2021,6.4
+Jamaica,JAM,2011,15.7
+Jamaica,JAM,2021,11.1
+Japan,JPN,2011,7.7
+Japan,JPN,2021,6.6
+Jordan,JOR,2011,12.1
+Jordan,JOR,2021,15.4
+Kazakhstan,KAZ,2011,7.7
+Kazakhstan,KAZ,2021,6.6
+Kenya,KEN,2011,5.1
+Kenya,KEN,2021,4
+Kiribati,KIR,2011,25.3
+Kiribati,KIR,2021,22.1
+Kuwait,KWT,2011,20.7
+Kuwait,KWT,2021,24.9
+Kyrgyzstan,KGZ,2011,6.3
+Kyrgyzstan,KGZ,2021,6.6
+Laos,LAO,2011,3.3
+Laos,LAO,2021,6.2
+Latin America and Caribbean (WB),,2011,10.270544
+Latin America and Caribbean (WB),,2021,9.880107
+Latvia,LVA,2011,7.8
+Latvia,LVA,2021,5.9
+Lebanon,LBN,2011,19.6
+Lebanon,LBN,2021,8
+Lesotho,LSO,2011,3.4
+Lesotho,LSO,2021,4.6
+Liberia,LBR,2011,3.3
+Liberia,LBR,2021,2.1
+Libya,LBY,2011,13.8
+Libya,LBY,2021,8.7
+Liechtenstein,LIE,2011,4.7
+Liechtenstein,LIE,2021,6.1
+Lithuania,LTU,2011,7.8
+Lithuania,LTU,2021,5.8
+Low-income countries,,2011,4.969254
+Low-income countries,,2021,6.778368
+Lower-middle-income countries,,2011,8.239392
+Lower-middle-income countries,,2021,10.707499
+Luxembourg,LUX,2011,4.5
+Luxembourg,LUX,2021,5.9
+Macao,MAC,2011,7.2
+Macao,MAC,2021,7.8
+Madagascar,MDG,2011,4.7
+Madagascar,MDG,2021,4.6
+Malawi,MWI,2011,5.6
+Malawi,MWI,2021,7.3
+Malaysia,MYS,2011,12.1
+Malaysia,MYS,2021,19
+Maldives,MDV,2011,9.2
+Maldives,MDV,2021,9.2
+Mali,MLI,2011,1.9
+Mali,MLI,2021,2.1
+Malta,MLT,2011,6.6
+Malta,MLT,2021,8
+Marshall Islands,MHL,2011,21.8
+Marshall Islands,MHL,2021,23
+Mauritania,MRT,2011,4.3
+Mauritania,MRT,2021,2.1
+Mauritius,MUS,2000,15
+Mauritius,MUS,2011,14.8
+Mauritius,MUS,2021,22.6
+Mexico,MEX,2000,14.2
+Mexico,MEX,2011,15.6
+Mexico,MEX,2021,16.9
+Micronesia (country),FSM,2011,15.7
+Micronesia (country),FSM,2021,15.6
+Middle East and North Africa (WB),,2011,12.137057
+Middle East and North Africa (WB),,2021,12.838092
+Middle-income countries,,2011,8.426656
+Middle-income countries,,2021,10.548998
+Moldova,MDA,2011,2.7
+Moldova,MDA,2021,5.6
+Monaco,MCO,2011,5.6
+Monaco,MCO,2021,6.2
+Mongolia,MNG,2011,7.1
+Mongolia,MNG,2021,6.9
+Montenegro,MNE,2011,7.7
+Montenegro,MNE,2021,9.1
+Morocco,MAR,2011,6.8
+Morocco,MAR,2021,9.1
+Mozambique,MOZ,2011,3.1
+Mozambique,MOZ,2021,3.3
+Myanmar,MMR,2011,7.1
+Myanmar,MMR,2021,7.1
+Namibia,NAM,2011,7.8
+Namibia,NAM,2021,6.7
+Nauru,NRU,2011,20.4
+Nauru,NRU,2021,23.4
+Nepal,NPL,2011,3.6
+Nepal,NPL,2021,8.7
+Netherlands,NLD,2011,5.3
+Netherlands,NLD,2021,4.5
+New Caledonia,NCL,2011,8.6
+New Caledonia,NCL,2021,23.4
+New Zealand,NZL,2011,8.6
+New Zealand,NZL,2021,6.2
+Nicaragua,NIC,2011,11
+Nicaragua,NIC,2021,9.3
+Niger,NER,2011,4.2
+Niger,NER,2021,5.2
+Nigeria,NGA,2011,4.8
+Nigeria,NGA,2021,3.6
+North America (WB),,2011,9.297727
+North America (WB),,2021,10.382534
+North Korea,PRK,2011,8.4
+North Korea,PRK,2021,8.6
+North Macedonia,MKD,2011,7.7
+North Macedonia,MKD,2021,6.1
+Northern Mariana Islands,MNP,2021,23.4
+Norway,NOR,2011,4.7
+Norway,NOR,2021,3.6
+Oman,OMN,2011,10.5
+Oman,OMN,2021,13.8
+Pakistan,PAK,2000,11.8
+Pakistan,PAK,2011,7.9
+Pakistan,PAK,2021,30.8
+Palau,PLW,2011,11.1
+Palau,PLW,2021,17
+Palestine,PSE,2011,9.2
+Palestine,PSE,2021,9.2
+Panama,PAN,2011,9.4
+Panama,PAN,2021,8.2
+Papua New Guinea,PNG,2000,15.5
+Papua New Guinea,PNG,2011,7.6
+Papua New Guinea,PNG,2021,16.7
+Paraguay,PRY,2011,6.5
+Paraguay,PRY,2021,7.5
+Peru,PER,2011,6
+Peru,PER,2021,4.8
+Philippines,PHL,2011,9.7
+Philippines,PHL,2021,7.1
+Poland,POL,2011,9
+Poland,POL,2021,6.8
+Portugal,PRT,2011,9.6
+Portugal,PRT,2021,9.1
+Puerto Rico,PRI,2011,13
+Puerto Rico,PRI,2021,13.3
+Qatar,QAT,2011,19.8
+Qatar,QAT,2021,19.5
+Romania,ROU,2011,7.7
+Romania,ROU,2021,6.5
+Russia,RUS,2011,9.7
+Russia,RUS,2021,5.6
+Rwanda,RWA,2011,3.1
+Rwanda,RWA,2021,6.5
+Saint Kitts and Nevis,KNA,2000,12.1
+Saint Kitts and Nevis,KNA,2011,8.5
+Saint Kitts and Nevis,KNA,2021,16.1
+Saint Lucia,LCA,2011,8.4
+Saint Lucia,LCA,2021,11.7
+Saint Vincent and the Grenadines,VCT,2011,8.8
+Saint Vincent and the Grenadines,VCT,2021,8
+Samoa,WSM,2011,7.7
+Samoa,WSM,2021,9.2
+San Marino,SMR,2011,5.5
+San Marino,SMR,2021,7.4
+Sao Tome and Principe,STP,2011,5.5
+Sao Tome and Principe,STP,2021,5.5
+Saudi Arabia,SAU,2011,19.6
+Saudi Arabia,SAU,2021,18.7
+Senegal,SEN,2011,3.2
+Senegal,SEN,2021,3.1
+Serbia,SRB,2011,7.7
+Serbia,SRB,2021,9.1
+Seychelles,SYC,2011,12.1
+Seychelles,SYC,2021,8.5
+Sierra Leone,SLE,2011,3.2
+Sierra Leone,SLE,2021,2.1
+Singapore,SGP,2011,9.5
+Singapore,SGP,2021,11.6
+Slovakia,SVK,2011,5.7
+Slovakia,SVK,2021,5.8
+Slovenia,SVN,2011,7.5
+Slovenia,SVN,2021,5.8
+Solomon Islands,SLB,2011,15.3
+Solomon Islands,SLB,2021,19.8
+Somalia,SOM,2011,4.3
+Somalia,SOM,2021,6.5
+South Africa,ZAF,2011,7
+South Africa,ZAF,2021,10.8
+South Asia (WB),,2011,8.890309
+South Asia (WB),,2021,12.326183
+South Korea,KOR,2011,7.5
+South Korea,KOR,2021,6.8
+South Sudan,SSD,2021,6.5
+Spain,ESP,2011,6.3
+Spain,ESP,2021,10.3
+Sri Lanka,LKA,2011,7.5
+Sri Lanka,LKA,2021,11.3
+Sub-Saharan Africa (WB),,2011,4.517327
+Sub-Saharan Africa (WB),,2021,5.816222
+Sudan,SDN,2011,8.6
+Sudan,SDN,2021,18.9
+Suriname,SUR,2011,8.9
+Suriname,SUR,2021,12.7
+Sweden,SWE,2011,4.2
+Sweden,SWE,2021,5
+Switzerland,CHE,2011,5.9
+Switzerland,CHE,2021,4.6
+Syria,SYR,2011,9.9
+Syria,SYR,2021,14.9
+Tajikistan,TJK,2011,6.3
+Tajikistan,TJK,2021,6.6
+Tanzania,TZA,2011,2.8
+Tanzania,TZA,2021,12.3
+Thailand,THA,2011,7.5
+Thailand,THA,2021,9.7
+Togo,TGO,2011,3.3
+Togo,TGO,2021,2.1
+Tonga,TON,2000,11.5
+Tonga,TON,2011,12.7
+Tonga,TON,2021,15
+Trinidad and Tobago,TTO,2000,14.1
+Trinidad and Tobago,TTO,2011,12.7
+Trinidad and Tobago,TTO,2021,12.7
+Tunisia,TUN,2011,9.5
+Tunisia,TUN,2021,9.6
+Turkey,TUR,2011,7.9
+Turkey,TUR,2021,14.5
+Turkmenistan,TKM,2011,2.7
+Turkmenistan,TKM,2021,6.7
+Tuvalu,TUV,2011,19.2
+Tuvalu,TUV,2021,20.3
+Uganda,UGA,2011,2.8
+Uganda,UGA,2021,4.6
+Ukraine,UKR,2011,2.9
+Ukraine,UKR,2021,5.6
+United Arab Emirates,ARE,2011,18.8
+United Arab Emirates,ARE,2021,16.4
+United Kingdom,GBR,2011,5.2
+United Kingdom,GBR,2021,6.3
+United States,USA,2011,9.4
+United States,USA,2021,10.7
+United States Virgin Islands,VIR,2011,12.1
+United States Virgin Islands,VIR,2021,12.4
+Upper-middle-income countries,,2011,8.585143
+Upper-middle-income countries,,2021,10.400198
+Uruguay,URY,2011,5.7
+Uruguay,URY,2021,9
+Uzbekistan,UZB,2011,6.4
+Uzbekistan,UZB,2021,7
+Vanuatu,VUT,2011,16.1
+Vanuatu,VUT,2021,15.6
+Venezuela,VEN,2011,10.2
+Venezuela,VEN,2021,9.6
+Vietnam,VNM,2011,3.2
+Vietnam,VNM,2021,6.1
+World,OWID_WRL,2011,8.1405735
+World,OWID_WRL,2021,9.797547
+Yemen,YEM,2011,9.6
+Yemen,YEM,2021,5.4
+Zambia,ZMB,2011,4.8
+Zambia,ZMB,2021,11.9
+Zimbabwe,ZWE,2011,9.8
+Zimbabwe,ZWE,2021,2.1

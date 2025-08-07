@@ -1,0 +1,24 @@
+{
+  "id": "child-mortality",
+  "chart_slug": "child-mortality",
+  "status": "success",
+  "files": {
+    "metadata": "owid_data/child-mortality/download_summary.json",
+    "csv": "owid_data/child-mortality/child-mortality.csv"
+  },
+  "stats": {
+    "rows": 1000,
+    "columns": 4,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Child mortality rate"
+    ],
+    "time_column": "Year",
+    "time_range": "1830-2023",
+    "entity_column": "Entity",
+    "entities": 14,
+    "has_korea": false
+  }
+}

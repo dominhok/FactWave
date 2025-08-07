@@ -1,0 +1,24 @@
+{
+  "id": "renewable-energy",
+  "chart_slug": "renewable-share-energy",
+  "status": "success",
+  "files": {
+    "csv": "owid_data/renewable-energy/renewable-share-energy.csv",
+    "metadata": "owid_data/renewable-energy/renewable-share-energy.metadata.json"
+  },
+  "stats": {
+    "rows": 1000,
+    "columns": 4,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Renewables (% equivalent primary energy)"
+    ],
+    "time_column": "Year",
+    "time_range": "1965-2024",
+    "entity_column": "Entity",
+    "entities": 18,
+    "has_korea": false
+  }
+}

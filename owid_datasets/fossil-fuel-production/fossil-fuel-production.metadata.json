@@ -1,0 +1,66 @@
+{
+  "chart": {
+    "title": "Fossil fuel production",
+    "subtitle": "Fossil fuel production is given in terawatt-hours (TWh).",
+    "citation": "Energy Institute - Statistical Review of World Energy (2025)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/fossil-fuel-production",
+    "selection": [
+      "World"
+    ]
+  },
+  "columns": {
+    "Coal production - TWh": {
+      "titleShort": "Coal production",
+      "titleLong": "Coal production",
+      "descriptionKey": [
+        "Includes commercial solid fuels only, i.e. bituminous coal and anthracite (hard coal), and lignite and brown (sub-bituminous) coal, and other commercial solid fuels. Includes coal produced for Coal-to-Liquids and Coal-to-Gas transformations."
+      ],
+      "shortUnit": "TWh",
+      "unit": "terawatt-hours",
+      "timespan": "1981-2024",
+      "type": "Numeric",
+      "owidVariableId": 1077540,
+      "shortName": "coal_production_twh",
+      "lastUpdated": "2025-06-27",
+      "nextUpdate": "2026-06-27",
+      "citationShort": "Energy Institute - Statistical Review of World Energy (2025) – with major processing by Our World in Data",
+      "citationLong": "Energy Institute - Statistical Review of World Energy (2025) – with major processing by Our World in Data. “Coal production” [dataset]. Energy Institute, “Statistical Review of World Energy” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077540.metadata.json"
+    },
+    "Oil production - TWh": {
+      "titleShort": "Oil production",
+      "titleLong": "Oil production",
+      "descriptionKey": [
+        "Includes crude oil, shale oil, oil sands, condensates (lease condensate or gas condensates that require further refining) and NGLs (natural gas liquids - ethane, LPG and naphtha separated from the production of natural gas). Excludes liquid fuels from other sources such as biofuels and synthetic derivatives of coal and natural gas. This also excludes liquid fuel adjustment factors such as refinery processing gain. Excludes oil shales/kerogen extracted in solid form."
+      ],
+      "shortUnit": "TWh",
+      "unit": "terawatt-hours",
+      "timespan": "1965-2024",
+      "type": "Numeric",
+      "owidVariableId": 1077636,
+      "shortName": "oil_production_twh",
+      "lastUpdated": "2025-06-27",
+      "nextUpdate": "2026-06-27",
+      "citationShort": "Energy Institute - Statistical Review of World Energy (2025) – with major processing by Our World in Data",
+      "citationLong": "Energy Institute - Statistical Review of World Energy (2025) – with major processing by Our World in Data. “Oil production” [dataset]. Energy Institute, “Statistical Review of World Energy” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077636.metadata.json"
+    },
+    "Gas production - TWh": {
+      "titleShort": "Gas production",
+      "titleLong": "Gas production",
+      "descriptionShort": "Excludes gas flared or recycled. Includes natural gas produced for Gas-to-Liquids transformation.",
+      "shortUnit": "TWh",
+      "unit": "terawatt-hours",
+      "timespan": "1970-2024",
+      "type": "Numeric",
+      "owidVariableId": 1077573,
+      "shortName": "gas_production_twh",
+      "lastUpdated": "2025-06-27",
+      "nextUpdate": "2026-06-27",
+      "citationShort": "Energy Institute - Statistical Review of World Energy (2025) – with major processing by Our World in Data",
+      "citationLong": "Energy Institute - Statistical Review of World Energy (2025) – with major processing by Our World in Data. “Gas production” [dataset]. Energy Institute, “Statistical Review of World Energy” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077573.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

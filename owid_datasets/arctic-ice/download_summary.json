@@ -1,0 +1,25 @@
+{
+  "id": "arctic-ice",
+  "chart_slug": "arctic-sea-ice",
+  "status": "success",
+  "files": {
+    "csv": "owid_data/arctic-ice/arctic-sea-ice.csv",
+    "metadata": "owid_data/arctic-ice/arctic-sea-ice.metadata.json"
+  },
+  "stats": {
+    "rows": 47,
+    "columns": 5,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Minimum Arctic sea ice extent",
+      "Maximum Arctic sea ice extent"
+    ],
+    "time_column": "Year",
+    "time_range": "1979-2025",
+    "entity_column": "Entity",
+    "entities": 1,
+    "has_korea": false
+  }
+}

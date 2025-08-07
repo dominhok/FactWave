@@ -1,0 +1,31 @@
+{
+  "chart": {
+    "title": "World population growth",
+    "subtitle": "Future projections are based on the [UN medium scenario](#dod:un-projection-scenarios).",
+    "citation": "HYDE (2023); Gapminder (2022); UN WPP (2024)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/population-growth-rate",
+    "selection": [
+      "World"
+    ]
+  },
+  "columns": {
+    "Population growth rate": {
+      "titleShort": "Population growth rate",
+      "titleLong": "Population growth rate",
+      "descriptionShort": "Average exponential rate of growth of the population over a given period. It is calculated as ln(P2/P1) where P1 and P2 are the populations on subsequent years. Available from 1700 to 2100, based on data and estimates from different sources.\n",
+      "descriptionProcessing": "### Combination of different sources\nThe data is constructed by combining data from multiple sources:\n\n- 1700 BCE - 1799: Historical estimates by HYDE (v3.3). Growth rate estimated over 50-year periods.\n\n- 1800 - 1949: Historical estimates by Gapminder (v7). Growth rate estimated over 50-year periods until 1900, then 10-year periods.\n\n- 1950-2023: Population records by the UN World Population Prospects (2024 revision). Growth rate estimated over 1-year periods.\n\n- 2024-2100: Projections based on Medium variant by the UN World Population Prospects (2024 revision). Growth rate estimated over 1-year periods.\n\n### Regional aggregates\n\n**Continents and other region aggregates**:\n\nFor most of the years, we've estimated regional aggregates by summing the population of countries in each region. We've relied on [our continents](https://ourworldindata.org/world-region-map-definitions#our-world-in-data) and [World Bank income group definitions](https://ourworldindata.org/grapher/world-bank-income-groups). The only exception is before 1800, where we've used HYDE's estimates on continents (but not income groups).\n\n**World**:\n- Before 1800: We've used HYDE's estimates.\n- 1800-1950: We've estimated the World population by summing all available countries in the dataset, ensuring that we do not double-count any country.\n- After 1950: We've relied on UN WPP's estimates.",
+      "shortUnit": "%",
+      "unit": "%",
+      "timespan": "1700-2100",
+      "type": "Numeric",
+      "owidVariableId": 953919,
+      "shortName": "growth_rate",
+      "lastUpdated": "2024-07-15",
+      "nextUpdate": "2026-07-15",
+      "citationShort": "HYDE (2023); Gapminder (2022); UN WPP (2024) – with major processing by Our World in Data",
+      "citationLong": "HYDE (2023); Gapminder (2022); UN WPP (2024) – with major processing by Our World in Data. “Population growth rate” [dataset]. PBL Netherlands Environmental Assessment Agency, “History Database of the Global Environment 3.3”; Gapminder, “Population v7”; United Nations, “World Population Prospects”; Gapminder, “Systema Globalis” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/953919.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

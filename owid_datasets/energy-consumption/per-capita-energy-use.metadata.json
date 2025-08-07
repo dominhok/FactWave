@@ -1,0 +1,36 @@
+{
+  "chart": {
+    "title": "Energy use per person",
+    "subtitle": "Measured in [kilowatt-hours](#dod:watt-hours) per person. Here, energy refers to [primary energy](#dod:primaryenergy) using the [substitution method](#dod:substitutionmethod).",
+    "citation": "U.S. Energy Information Administration (2025); Energy Institute - Statistical Review of World Energy (2025); Population based on various sources (2024)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/per-capita-energy-use",
+    "selection": [
+      "India",
+      "United States",
+      "Canada",
+      "China",
+      "France",
+      "United Kingdom"
+    ]
+  },
+  "columns": {
+    "Primary energy consumption per capita (kWh/person)": {
+      "titleShort": "Primary energy consumption per capita",
+      "titleLong": "Primary energy consumption per capita",
+      "descriptionShort": "Measured in kilowatt-hours per person.",
+      "descriptionProcessing": "- Primary energy consumption data was compiled based on two key data sources: [Energy Institute (EI) Statistical Review of World Energy](https://www.energyinst.org/statistical-review), and [International energy data from the U.S. Energy Information Administration (EIA)](https://www.eia.gov/international/data/world/total-energy/more-total-energy-data). EI provides the longest and most up-to-date time-series of primary energy. However, it does not provide data for all countries. We have therefore supplemented this dataset with energy data from the EIA. Where EI provides data for a given country, this data is adopted; for countries where this data is missing, we rely on EIA energy figures.\n- Per capita figures have been calculated using a population dataset that is based on [different sources](https://ourworldindata.org/population-sources).\n- To calculate energy per unit of GDP, we divide by total real GDP figures from [the Maddison Project Database](https://ourworldindata.org/grapher/gdp-maddison-project-database).\n",
+      "shortUnit": "kWh",
+      "unit": "kilowatt-hours per person",
+      "timespan": "1965-2024",
+      "type": "Numeric",
+      "owidVariableId": 1077554,
+      "shortName": "primary_energy_consumption_per_capita__kwh",
+      "lastUpdated": "2025-06-27",
+      "nextUpdate": "2026-06-27",
+      "citationShort": "U.S. Energy Information Administration (2025); Energy Institute - Statistical Review of World Energy (2025); Population based on various sources (2024) – with major processing by Our World in Data",
+      "citationLong": "U.S. Energy Information Administration (2025); Energy Institute - Statistical Review of World Energy (2025); Population based on various sources (2024) – with major processing by Our World in Data. “Primary energy consumption per capita” [dataset]. U.S. Energy Information Administration, “International Energy Data”; Energy Institute, “Statistical Review of World Energy”; Various sources, “Population” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1077554.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

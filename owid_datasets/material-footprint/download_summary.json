@@ -1,0 +1,24 @@
+{
+  "id": "material-footprint",
+  "chart_slug": "material-footprint-per-capita",
+  "status": "success",
+  "files": {
+    "csv": "owid_data/material-footprint/material-footprint-per-capita.csv",
+    "metadata": "owid_data/material-footprint/download_summary.json"
+  },
+  "stats": {
+    "rows": 23,
+    "columns": 4,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "12.2.1 - Material footprint per capita, by type of raw material (tonnes) - EN_MAT_FTPRPC"
+    ],
+    "time_column": "Year",
+    "time_range": "2000-2022",
+    "entity_column": "Entity",
+    "entities": 1,
+    "has_korea": false
+  }
+}

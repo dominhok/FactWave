@@ -1,0 +1,24 @@
+{
+  "id": "co2-per-capita",
+  "chart_slug": "co2-emissions-per-capita",
+  "status": "success",
+  "files": {
+    "metadata": "owid_data/co2-per-capita/co-emissions-per-capita.metadata.json",
+    "csv": "owid_data/co2-per-capita/co-emissions-per-capita.csv"
+  },
+  "stats": {
+    "rows": 1000,
+    "columns": 4,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Annual CO\u2082 emissions (per capita)"
+    ],
+    "time_column": "Year",
+    "time_range": "1830-2023",
+    "entity_column": "Entity",
+    "entities": 11,
+    "has_korea": false
+  }
+}

@@ -134,38 +134,9 @@ class NaverNewsTool(BaseTool):
         return clean_text.strip()
     
     def _get_mock_data(self, query: str) -> str:
-        """API 키가 없을 때 사용할 모의 데이터"""
-        result = f"📰 네이버 뉴스 검색: '{query}' (모의 데이터)\n\n"
-        
-        # 예시 뉴스 데이터
-        mock_news = [
-            {
-                "title": f"{query} 관련 최신 동향 분석",
-                "date": "2024년 01월 15일",
-                "source": "연합뉴스",
-                "summary": f"{query}에 대한 전문가들의 분석에 따르면, 최근 동향은 매우 주목할 만하다..."
-            },
-            {
-                "title": f"[팩트체크] {query} 관련 주장 검증",
-                "date": "2024년 01월 14일", 
-                "source": "한겨레",
-                "summary": f"최근 SNS에서 확산된 {query} 관련 주장을 사실 확인한 결과..."
-            },
-            {
-                "title": f"{query}, 새로운 연구 결과 발표",
-                "date": "2024년 01월 13일",
-                "source": "조선일보",
-                "summary": f"국내 연구진이 {query}에 대한 새로운 연구 결과를 발표했다..."
-            }
-        ]
-        
-        for i, news in enumerate(mock_news, 1):
-            result += f"📌 뉴스 {i}: {news['title']}\n"
-            result += f"📅 발행일: {news['date']} | 📰 언론사: {news['source']}\n"
-            result += f"📝 요약: {news['summary']}\n"
-            result += "-" * 60 + "\n\n"
-        
-        result += "⚠️ 참고: 실제 API 키가 설정되지 않아 샘플 데이터를 표시합니다.\n"
-        result += "네이버 개발자 센터에서 API 키를 발급받으세요: https://developers.naver.com/"
-        
-        return result
+        """API 키가 없을 때 반환할 오류 메시지"""
+        return f"❌ 네이버 뉴스 API 키가 설정되지 않았습니다.\n\n" \
+               f"API 키 설정 방법:\n" \
+               f"1. 네이버 개발자 센터에서 API 키 발급: https://developers.naver.com/\n" \
+               f"2. .env 파일에 NAVER_CLIENT_ID와 NAVER_CLIENT_SECRET 설정\n" \
+               f"\n검색하려던 키워드: '{query}'"

@@ -1,0 +1,36 @@
+{
+  "chart": {
+    "title": "Share of adults with an account at a financial institution",
+    "subtitle": "The share of respondents aged 15 and older, who report having an account (by themselves or with someone else) at a bank or another type of financial institution.",
+    "citation": "Global Findex Database, World Bank (2025)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/account-at-financial-institution",
+    "selection": [
+      "Bolivia",
+      "Burundi",
+      "China",
+      "Colombia",
+      "United States",
+      "Japan",
+      "Democratic Republic of Congo",
+      "Brazil"
+    ]
+  },
+  "columns": {
+    "Account ownership at a financial institution or with a mobile-money-service provider (% of population ages 15+)": {
+      "titleShort": "Account ownership at a financial institution or with a mobile-money-service provider (% of population ages 15+)",
+      "titleLong": "Account ownership at a financial institution or with a mobile-money-service provider (% of population ages 15+)",
+      "shortUnit": "%",
+      "unit": "% age 15+",
+      "timespan": "2011-2022",
+      "type": "Numeric",
+      "owidVariableId": 1008012,
+      "shortName": "fx_own_totl_zs",
+      "lastUpdated": "2025-01-24",
+      "nextUpdate": "2026-01-24",
+      "citationShort": "Global Findex Database, World Bank (2025) – processed by Our World in Data",
+      "citationLong": "Global Findex Database, World Bank (2025) – processed by Our World in Data. “Account ownership at a financial institution or with a mobile-money-service provider (% of population ages 15+)” [dataset]. Global Findex Database, World Bank, “World Development Indicators” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/1008012.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

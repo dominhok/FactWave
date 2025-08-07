@@ -1,0 +1,25 @@
+{
+  "chart": {
+    "title": "Share of people who smoke every day",
+    "subtitle": "Estimates of the prevalence of daily smoking, defined as the percentage of men and women, of all ages, who smoke daily.",
+    "citation": "Institute for Health Metrics and Evaluation (2012)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/daily-smoking-prevalence-bounds",
+    "selection": [
+      "World"
+    ]
+  },
+  "columns": {
+    "Daily smoking prevalence - both (IHME, GHDx (2012))": {
+      "titleShort": "Estimated prevalence",
+      "titleLong": "Estimated prevalence",
+      "unit": "",
+      "timespan": "",
+      "type": "Numeric",
+      "owidVariableId": 85818,
+      "citationShort": " – processed by Our World in Data",
+      "citationLong": " – processed by Our World in Data. “Estimated prevalence” [dataset]. Institute for Health Metrics and Evaluation (IHME) (2012) [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/85818.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

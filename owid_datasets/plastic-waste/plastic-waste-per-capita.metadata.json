@@ -1,0 +1,30 @@
+{
+  "chart": {
+    "title": "Plastic waste generation per capita",
+    "subtitle": "Daily plastic waste generation per person, measured in kilograms per person per day. This measures the overall per capita plastic waste generation rate prior to waste management, recycling or incineration. It does not therefore directly indicate the risk of pollution to waterways or marine environments.",
+    "citation": "Jambeck et al. (2015)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/plastic-waste-per-capita",
+    "selection": [
+      "United States",
+      "United Kingdom",
+      "China",
+      "Canada",
+      "Brazil",
+      "India"
+    ]
+  },
+  "columns": {
+    "Per capita plastic waste (kg/person/day)": {
+      "titleShort": "Per capita plastic waste",
+      "titleLong": "Per capita plastic waste",
+      "unit": "kilograms per person per day",
+      "timespan": "",
+      "type": "Numeric",
+      "owidVariableId": 65358,
+      "citationShort": " – processed by Our World in Data",
+      "citationLong": " – processed by Our World in Data. “Per capita plastic waste” [dataset]. Jambeck, J. R., Geyer, R., Wilcox, C., Siegler, T. R., Perryman, M., Andrady, A., ... & Law, K. L. (2015). Plastic waste inputs from land into the ocean. Science. [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/65358.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

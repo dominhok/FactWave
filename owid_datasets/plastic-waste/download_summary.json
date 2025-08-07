@@ -1,0 +1,24 @@
+{
+  "id": "plastic-waste",
+  "chart_slug": "plastic-waste-per-capita",
+  "status": "success",
+  "files": {
+    "csv": "owid_data/plastic-waste/plastic-waste-per-capita.csv",
+    "metadata": "owid_data/plastic-waste/download_summary.json"
+  },
+  "stats": {
+    "rows": 186,
+    "columns": 4,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Per capita plastic waste (kg/person/day)"
+    ],
+    "time_column": "Year",
+    "time_range": "2010-2010",
+    "entity_column": "Entity",
+    "entities": 186,
+    "has_korea": true
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "chart": {
+    "title": "Greenhouse gas emissions by gas",
+    "subtitle": "[Greenhouse gas emissions](#dod:ghgemissions) from all sources, including agriculture and land-use change. They are measured in tonnes of [carbon dioxide-equivalents](#dod:carbondioxideequivalents) over a 100-year timescale.",
+    "citation": "Jones et al. (2024)",
+    "originalChartUrl": "https://ourworldindata.org/grapher/ghg-emissions-by-gas",
+    "selection": [
+      "World"
+    ]
+  },
+  "columns": {
+    "Annual nitrous oxide emissions in CO₂ equivalents": {
+      "titleShort": "Annual nitrous oxide emissions including land use",
+      "titleLong": "Annual nitrous oxide emissions including land use",
+      "descriptionShort": "Measured in tonnes of [carbon dioxide-equivalents](#dod:carbondioxideequivalents) over a 100-year timescale.",
+      "descriptionProcessing": "Nitrous oxide emissions in tonnes have been converted to carbon-dioxide equivalents over a 100-year timescale using a conversion factor of 273. This factor is taken from the 6th Assessment Report (AR6) of the Intergovernmental Panel on Climate Change (IPCC).",
+      "shortUnit": "t",
+      "unit": "tonnes of CO₂ equivalents",
+      "timespan": "1850-2023",
+      "type": "Numeric",
+      "owidVariableId": 998915,
+      "shortName": "annual_emissions_n2o_total_co2eq",
+      "lastUpdated": "2024-11-21",
+      "nextUpdate": "2025-11-21",
+      "citationShort": "Jones et al. (2024) – with major processing by Our World in Data",
+      "citationLong": "Jones et al. (2024) – with major processing by Our World in Data. “Annual nitrous oxide emissions including land use” [dataset]. Jones et al., “National contributions to climate change 2024.2” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/998915.metadata.json"
+    },
+    "Annual methane emissions in CO₂ equivalents": {
+      "titleShort": "Annual methane emissions including land use",
+      "titleLong": "Annual methane emissions including land use",
+      "descriptionShort": "Measured in tonnes of [carbon dioxide-equivalents](#dod:carbondioxideequivalents) over a 100-year timescale.",
+      "descriptionProcessing": "Methane emissions in tonnes have been converted to carbon-dioxide equivalents over a 100-year timescale using a conversion factor of 29.8 for fossil sources and 27.2 for agricultural and land use sources. These factors are taken from the 6th Assessment Report (AR6) of the Intergovernmental Panel on Climate Change (IPCC).",
+      "shortUnit": "t",
+      "unit": "tonnes of CO₂ equivalents",
+      "timespan": "1850-2023",
+      "type": "Numeric",
+      "owidVariableId": 998904,
+      "shortName": "annual_emissions_ch4_total_co2eq",
+      "lastUpdated": "2024-11-21",
+      "nextUpdate": "2025-11-21",
+      "citationShort": "Jones et al. (2024) – with major processing by Our World in Data",
+      "citationLong": "Jones et al. (2024) – with major processing by Our World in Data. “Annual methane emissions including land use” [dataset]. Jones et al., “National contributions to climate change 2024.2” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/998904.metadata.json"
+    },
+    "Annual CO₂ emissions": {
+      "titleShort": "Annual CO₂ emissions including land use",
+      "titleLong": "Annual CO₂ emissions including land use",
+      "descriptionShort": "Measured in tonnes.",
+      "shortUnit": "t",
+      "unit": "tonnes",
+      "timespan": "1850-2023",
+      "type": "Numeric",
+      "owidVariableId": 998809,
+      "shortName": "annual_emissions_co2_total",
+      "lastUpdated": "2024-11-21",
+      "nextUpdate": "2025-11-21",
+      "citationShort": "Jones et al. (2024) – with major processing by Our World in Data",
+      "citationLong": "Jones et al. (2024) – with major processing by Our World in Data. “Annual CO₂ emissions including land use” [dataset]. Jones et al., “National contributions to climate change 2024.2” [original data].",
+      "fullMetadata": "https://api.ourworldindata.org/v1/indicators/998809.metadata.json"
+    }
+  },
+  "dateDownloaded": "2025-08-07"
+}

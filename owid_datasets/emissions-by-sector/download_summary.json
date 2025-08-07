@@ -1,0 +1,34 @@
+{
+  "id": "emissions-by-sector",
+  "chart_slug": "ghg-emissions-by-sector",
+  "status": "success",
+  "files": {
+    "metadata": "owid_data/emissions-by-sector/ghg-emissions-by-sector.metadata.json",
+    "csv": "owid_data/emissions-by-sector/ghg-emissions-by-sector.csv"
+  },
+  "stats": {
+    "rows": 1000,
+    "columns": 14,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Greenhouse gas emissions from agriculture",
+      "Greenhouse gas emissions from land use change and forestry",
+      "Greenhouse gas emissions from waste",
+      "Greenhouse gas emissions from buildings",
+      "Greenhouse gas emissions from industry",
+      "Greenhouse gas emissions from manufacturing and construction",
+      "Greenhouse gas emissions from transport",
+      "Greenhouse gas emissions from electricity and heat",
+      "Fugitive emissions of greenhouse gases from energy production",
+      "Greenhouse gas emissions from other fuel combustion",
+      "Greenhouse gas emissions from bunker fuels"
+    ],
+    "time_column": "Year",
+    "time_range": "1990-2021",
+    "entity_column": "Entity",
+    "entities": 32,
+    "has_korea": false
+  }
+}

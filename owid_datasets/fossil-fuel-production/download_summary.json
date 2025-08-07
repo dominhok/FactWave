@@ -1,0 +1,26 @@
+{
+  "id": "fossil-fuel-production",
+  "chart_slug": "fossil-fuel-production",
+  "status": "success",
+  "files": {
+    "csv": "owid_data/fossil-fuel-production/fossil-fuel-production.csv",
+    "metadata": "owid_data/fossil-fuel-production/download_summary.json"
+  },
+  "stats": {
+    "rows": 1000,
+    "columns": 6,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Coal production - TWh",
+      "Oil production - TWh",
+      "Gas production - TWh"
+    ],
+    "time_column": "Year",
+    "time_range": "1965-2024",
+    "entity_column": "Entity",
+    "entities": 18,
+    "has_korea": false
+  }
+}

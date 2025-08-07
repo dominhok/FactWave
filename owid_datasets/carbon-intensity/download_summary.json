@@ -1,0 +1,24 @@
+{
+  "id": "carbon-intensity",
+  "chart_slug": "carbon-intensity-electricity",
+  "status": "success",
+  "files": {
+    "metadata": "owid_data/carbon-intensity/download_summary.json",
+    "csv": "owid_data/carbon-intensity/carbon-intensity-electricity.csv"
+  },
+  "stats": {
+    "rows": 1000,
+    "columns": 4,
+    "column_names": [
+      "Entity",
+      "Code",
+      "Year",
+      "Carbon intensity of electricity - gCO2/kWh"
+    ],
+    "time_column": "Year",
+    "time_range": "2000-2024",
+    "entity_column": "Entity",
+    "entities": 42,
+    "has_korea": false
+  }
+}
