@@ -1,0 +1,18 @@
+---
+description: 통합 테스트와 작업 루틴 가이드
+---
+# 작업/테스트 가이드
+
+일상 작업 루틴:
+1. 가벼운 변경 후: `uv run python test_integrated.py tools`
+2. 에이전트/크루 변경 후: `uv run python test_integrated.py agents` 또는 `crew`
+3. RAG 변경 후: 인덱스 재빌드 필요 시 [build_owid_index.py](mdc:build_owid_index.py) 실행
+
+CLI 실행:
+- `uv run python main.py`
+
+문서 확인:
+- [README.md](mdc:README.md)
+- [docs/OWID_RAG_SYSTEM.md](mdc:docs/OWID_RAG_SYSTEM.md)
+- [docs/API_REQUIREMENTS.md](mdc:docs/API_REQUIREMENTS.md)
+

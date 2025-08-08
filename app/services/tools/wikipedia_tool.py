@@ -58,29 +58,41 @@ class WikipediaSearchTool(BaseTool):
                 else:
                     return f"Wikipedia에서 '{query}'에 대한 정보를 찾을 수 없습니다."
             
-            # 요약 정보 추출
-            summary = page.summary[:1000]  # 처음 1000자만
+            # 팩트체킹을 위해 더 많은 내용 추출
+            # 전체 요약 (최대 3000자)
+            full_summary = page.summary
+            if len(full_summary) > 3000:
+                full_summary = full_summary[:2997] + "..."
             
             result = f"""
 📚 Wikipedia 검색 결과: {page.title}
 
 📝 요약:
-{summary}
+{full_summary}
 
 🔗 전체 문서: {page.fullurl}
 
-📊 관련 섹션:
+📊 주요 섹션 내용:
 """
-            # 주요 섹션 목록 추가
-            sections = []
-            for section in page.sections[:5]:  # 처음 5개 섹션만
-                if section.title and section.title != "See also" and section.title != "References":
-                    sections.append(f"- {section.title}")
+            # 주요 섹션의 내용도 포함 (팩트체킹에 중요)
+            sections_content = []
+            total_chars = len(full_summary)
             
-            if sections:
-                result += "\n".join(sections)
+            for section in page.sections[:10]:  # 더 많은 섹션 확인
+                if total_chars > 5000:  # 최대 5000자까지
+                    break
+                    
+                if section.title and section.title not in ["See also", "References", "External links", "같이 보기", "각주", "외부 링크"]:
+                    section_text = section.text[:500] if section.text else ""
+                    if section_text:
+                        sections_content.append(f"\n### {section.title}")
+                        sections_content.append(section_text)
+                        total_chars += len(section_text)
+            
+            if sections_content:
+                result += "\n".join(sections_content)
             else:
-                result += "- 추가 섹션 없음"
+                result += "\n- 추가 섹션 내용 없음"
             
             return result
             

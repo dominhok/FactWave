@@ -153,94 +153,44 @@ class OWIDRAGTool(BaseTool):
             return f"Error performing search: {str(e)}"
     
     def _format_results(self, query: str, results: List[Dict]) -> str:
-        """Format search results for display"""
+        """구조화된 OWID 출력 형식 - 모든 메타데이터 있는 그대로 전달"""
         
-        output = f"🔍 OWID Statistics Search: '{query}'\n"
-        output += "=" * 60 + "\n\n"
+        result_lines = []
+        result_lines.append(f"📊 OWID 통계 검색 결과: '{query}'")
+        result_lines.append("━" * 60)
+        result_lines.append("📌 출처: Our World in Data")
+        result_lines.append(f"📊 발견된 결과: {len(results)}개\n")
         
         for i, result in enumerate(results, 1):
-            output += f"📊 Result {i}:\n"
-            output += f"  Dataset: {result.get('dataset_id', 'Unknown')}\n"
-            output += f"  Type: {result.get('chunk_type', 'Unknown')}\n"
+            result_lines.append(f"📈 [{i}] OWID 데이터")
+            result_lines.append("─" * 40)
             
-            # Add metadata if available
-            metadata = result.get('metadata', {})
-            if metadata.get('year'):
-                output += f"  Year: {metadata['year']}\n"
-            if metadata.get('country'):
-                output += f"  Country: {metadata['country']}\n"
+            # 모든 메타데이터를 있는 그대로 표시
+            result_lines.append("📁 검색 결과 메타데이터:")
+            for key, value in result.items():
+                if value is not None and str(value).strip():
+                    # 중첩된 객체 처리
+                    if isinstance(value, dict):
+                        result_lines.append(f"  📋 {key}:")
+                        for sub_key, sub_value in value.items():
+                            if sub_value is not None:
+                                result_lines.append(f"    {sub_key}: {sub_value}")
+                    else:
+                        result_lines.append(f"  📋 {key}: {value}")
             
-            # Confidence score
-            score = result.get('score', 0)
-            if score > 0:
-                output += f"  Confidence: {self._score_to_confidence(score)}\n"
-            
-            # Content preview
+            # 콘텐츠 전체를 있는 그대로 표시
             content = result.get('content', '')
-            # Extract key statistics from content
-            stats = self._extract_key_stats(content)
-            if stats:
-                output += f"  Key Stats:\n"
-                for stat in stats[:3]:  # Show top 3 stats
-                    output += f"    • {stat}\n"
+            if content:
+                result_lines.append("\n📊 원본 데이터:")
+                # 콘텐츠를 줄 단위로 나누어 표시
+                for line in content.split('\n'):
+                    if line.strip():
+                        result_lines.append(f"  {line.strip()}")
             
-            output += "\n"
+            result_lines.append("")
         
-        # Add summary
-        output += self._add_search_summary(results)
-        
-        return output
+        return "\n".join(result_lines)
     
-    def _score_to_confidence(self, score: float) -> str:
-        """Convert score to confidence level"""
-        if score > 5:
-            return "⭐⭐⭐⭐⭐ Very High"
-        elif score > 3:
-            return "⭐⭐⭐⭐ High"
-        elif score > 1:
-            return "⭐⭐⭐ Medium"
-        elif score > 0:
-            return "⭐⭐ Low"
-        else:
-            return "⭐ Very Low"
-    
-    def _extract_key_stats(self, content: str) -> List[str]:
-        """Extract key statistics from content"""
-        stats = []
-        
-        # Look for patterns like "- Latest: X", "Average: Y", etc.
-        lines = content.split('\n')
-        for line in lines:
-            line = line.strip()
-            if line.startswith('- ') and ':' in line:
-                stats.append(line[2:])  # Remove "- " prefix
-            elif 'Latest' in line or 'Average' in line or 'Mean' in line:
-                if ':' in line:
-                    stats.append(line.split(':', 1)[1].strip())
-        
-        return stats
-    
-    def _add_search_summary(self, results: List[Dict]) -> str:
-        """Add summary of search results"""
-        
-        # Count datasets and types
-        datasets = set()
-        types = set()
-        for result in results:
-            datasets.add(result.get('dataset_id', ''))
-            types.add(result.get('chunk_type', ''))
-        
-        summary = "📈 Summary:\n"
-        summary += f"  Found data from {len(datasets)} dataset(s)\n"
-        summary += f"  Data types: {', '.join(types)}\n"
-        
-        # Suggest related searches based on results
-        if any('korea' in r.get('chunk_type', '') for r in results):
-            summary += "  💡 Tip: Found Korea-specific data\n"
-        if any('trend' in r.get('chunk_type', '') for r in results):
-            summary += "  💡 Tip: Time-series trends available\n"
-        
-        return summary
     
     def get_available_datasets(self) -> List[str]:
         """Get list of available datasets"""

@@ -5,15 +5,43 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "dotenv>=0.9.9",
-    "openai>=1.97.1",
+    # Core framework
     "crewai>=0.86.0",
     "crewai-tools>=0.4.26",
+    "pydantic>=1.10,<3",
+    "python-dotenv>=1.0.0",
     "rich>=13.7.0",
     "pyyaml>=6.0.1",
+    
+    # LLM providers
+    "openai>=1.97.1",
+    
+    # Data processing
+    "pandas>=2.0.0",
+    "numpy>=1.26.0",
+    
+    # HTTP requests
     "requests>=2.31.0",
+    
+    # Academic tools
     "arxiv>=2.1.0",
     "wikipedia-api>=0.6.0",
-    "pandas>=2.0.0",
-    "python-dotenv>=1.0.0",
+    
+    # Statistical tools
+    "PublicDataReader>=1.0.0",
+    
+    # OWID RAG system
+    "chromadb>=0.5.0",
+    "sentence-transformers>=2.6.0",
+    "rank-bm25>=0.2.2",
+    
+    # Utilities
+    "xmltodict>=0.13.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=4.9.0",
+]
+
+[project.optional-dependencies]
+ko = [
+  "konlpy>=0.6.0"
 ]

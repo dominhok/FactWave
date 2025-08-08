@@ -22,7 +22,7 @@ class OpenAlexClient:
         self.base_url = "https://api.openalex.org"
         self.headers = {
             "Accept": "application/json",
-            "User-Agent": "FactWave/1.0 (mailto:factwave@example.com)"  # Polite request header
+            "User-Agent": "FactWave/1.0 (https://github.com/FactWave)"  # Polite request header
         }
     
     def search_works(self, query: str, limit: int = 10, 
@@ -150,9 +150,9 @@ class OpenAlexClient:
         if not abstract:
             return ""
         
-        # 너무 긴 초록은 잘라내기
-        if len(abstract) > 500:
-            return abstract[:497] + "..."
+        # 팩트체킹을 위해 초록 전체 반환 (최대 2000자)
+        if len(abstract) > 2000:
+            return abstract[:1997] + "..."
         
         return abstract
 
@@ -230,7 +230,8 @@ class OpenAlexTool(BaseTool):
                         if paper['pdf_url']:
                             summary += f"📎 PDF: {paper['pdf_url']}\n"
                     if paper['abstract']:
-                        summary += f"📝 초록: {paper['abstract'][:200]}...\n"
+                        # 팩트체킹을 위해 초록 전체 포함
+                        summary += f"📝 초록: {paper['abstract']}\n"
                     summary += f"🔗 OpenAlex: {paper['openalex_url']}\n"
                     summary += "-" * 50 + "\n\n"
                 

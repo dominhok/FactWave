@@ -80,10 +80,8 @@ class ArxivSearchTool(BaseTool):
                 categories = paper.categories
                 result += f"🏷️ 카테고리: {', '.join(categories[:3])}\n"
                 
-                # 초록 (처음 300자)
+                # 초록 (전체 포함 - 팩트체킹에 중요)
                 abstract = paper.summary.replace('\n', ' ')
-                if len(abstract) > 300:
-                    abstract = abstract[:300] + "..."
                 result += f"📝 초록: {abstract}\n"
                 
                 # 링크

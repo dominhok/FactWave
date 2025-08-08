@@ -2,12 +2,11 @@
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
-from typing import Type, Optional
+from typing import Type
 import requests
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from rich.console import Console
-import urllib.parse
 
 console = Console()
 
@@ -104,7 +103,7 @@ class NaverNewsTool(BaseTool):
                     dt = datetime.strptime(pub_date, "%a, %d %b %Y %H:%M:%S %z")
                     formatted_date = dt.strftime("%Y년 %m월 %d일 %H:%M")
                     result += f"📅 발행일: {formatted_date}\n"
-                except:
+                except (ValueError, AttributeError):
                     result += f"📅 발행일: {pub_date}\n"
             
             # 요약
