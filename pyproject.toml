@@ -6,39 +6,89 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     # Core framework
-    "crewai>=0.86.0",
-    "crewai-tools>=0.4.26",
-    "pydantic>=1.10,<3",
-    "python-dotenv>=1.0.0",
-    "rich>=13.7.0",
-    "pyyaml>=6.0.1",
+    "crewai",
+    "crewai-tools", 
+    "pydantic",
+    "python-dotenv",
+    "rich",
+    "pyyaml",
+    "fastapi",
+    "uvicorn",
     
     # LLM providers
-    "openai>=1.97.1",
+    "openai",
+    "anthropic",
+    "litellm",
     
     # Data processing
-    "pandas>=2.0.0",
-    "numpy>=1.26.0",
+    "pandas",
+    "numpy",
+    "scipy",
+    "scikit-learn",
     
     # HTTP requests
-    "requests>=2.31.0",
+    "requests",
+    "httpx",
+    "aiohttp",
     
     # Academic tools
-    "arxiv>=2.1.0",
-    "wikipedia-api>=0.6.0",
+    "arxiv",
+    "wikipedia-api",
     
     # Statistical tools
-    "PublicDataReader>=1.0.0",
+    "PublicDataReader",
     
-    # OWID RAG system
-    "chromadb>=0.5.0",
-    "sentence-transformers>=2.6.0",
-    "rank-bm25>=0.2.2",
+    # OWID RAG system & ML
+    "chromadb",
+    "sentence-transformers",
+    "rank-bm25",
+    "torch",
+    "transformers",
+    "tokenizers",
+    "tiktoken",
+    
+    # Language processing
+    "nltk",
+    "langchain",
+    "langchain-core",
+    "langchain-community",
+    "langchain-openai",
+    "langchain-text-splitters",
+    "langsmith",
+    
+    # Web scraping & parsing
+    "beautifulsoup4",
+    "xmltodict",
+    "playwright",
+    "pdfplumber",
+    "pypdf",
+    
+    # Database & storage
+    "sqlalchemy",
+    "psycopg2-binary",
+    "lancedb",
+    "qdrant-client",
     
     # Utilities
-    "xmltodict>=0.13.0",
-    "beautifulsoup4>=4.12.0",
-    "lxml>=4.9.0",
+    "typer",
+    "click",
+    "tenacity",
+    "joblib",
+    "tqdm",
+    "fire",
+    "packaging",
+    
+    # Monitoring & observability
+    "opentelemetry-api",
+    "opentelemetry-sdk", 
+    "opentelemetry-instrumentation-fastapi",
+    "posthog",
+    
+    # Development
+    "black",
+    "isort",
+    "pytest",
+    "pytest-asyncio",
 ]
 
 [project.optional-dependencies]
