@@ -14,7 +14,7 @@ class NewsAPIInput(BaseModel):
     to_date: Optional[str] = Field(None, description="ISO8601 종료 날짜")
     language: Optional[str] = Field(None, description="언어 코드, 예: en, ko")
     sort_by: Optional[str] = Field("publishedAt", description="정렬: relevancy|popularity|publishedAt")
-    page_size: Optional[int] = Field(20, description="페이지당 결과수(최대 100)")
+    page_size: Optional[int] = Field(30, description="페이지당 결과수(최대 100)")
 
 
 class NewsAPITool(BaseTool):
@@ -34,7 +34,7 @@ class NewsAPITool(BaseTool):
         to_date: Optional[str] = None,
         language: Optional[str] = None,
         sort_by: Optional[str] = "publishedAt",
-        page_size: Optional[int] = 20,
+        page_size: Optional[int] = 30,
     ) -> str:
         api_key = os.getenv("NEWSAPI_API_KEY")
         if not api_key:
@@ -67,21 +67,60 @@ class NewsAPITool(BaseTool):
             if not articles:
                 return f"'{query}'에 대한 뉴스 결과가 없습니다."
 
+            total_results = data.get('totalResults', 0)
             lines = [
-                f"📰 NewsAPI 검색 결과: '{query}' (총 {data.get('totalResults', 0):,}건 중 {len(articles)}건 표시)\n"
+                f"📰 NewsAPI 검색 결과: '{query}'\n",
+                f"📊 총 {total_results:,}건 중 {len(articles)}건 표시\n\n"
             ]
+            
+            
             for i, a in enumerate(articles, 1):
                 title = a.get("title") or "제목 없음"
                 source = (a.get("source") or {}).get("name") or "출처 미상"
                 published = a.get("publishedAt") or ""
+                author = a.get("author") or ""
                 desc = a.get("description") or ""
-                if len(desc) > 200:
-                    desc = desc[:200] + "..."
+                content = a.get("content") or ""
                 url_a = a.get("url") or ""
-                lines.append(
-                    f"[{i}] {title}\n- 출처: {source}\n- 일시: {published}\n- 요약: {desc}\n- 링크: {url_a}\n"
-                )
-            return "\n".join(lines)
+                url_image = a.get("urlToImage") or ""
+                
+                # 날짜 포맷팅 및 최신성 표시
+                if published:
+                    try:
+                        from datetime import datetime, timezone
+                        dt = datetime.fromisoformat(published.replace('Z', '+00:00'))
+                        formatted_date = dt.strftime("%Y-%m-%d %H:%M UTC")
+                        now = datetime.now(timezone.utc)
+                        hours_ago = (now - dt).total_seconds() / 3600
+                        
+                        published_str = formatted_date
+                    except:
+                        published_str = published
+                else:
+                    published_str = "N/A"
+                
+                lines.append(f"[{i}] {title}\n")
+                lines.append(f"  📰 출처: {source}\n")
+                lines.append(f"  📅 발행: {published_str}\n")
+                
+                if author and author != "null":
+                    # 저자명 정리
+                    author_clean = author[:50] if len(author) > 50 else author
+                    lines.append(f"  ✍️ 저자: {author_clean}\n")
+                
+                # 요약
+                if desc:
+                    desc_preview = desc[:350] + "..." if len(desc) > 350 else desc
+                    lines.append(f"  📝 요약: {desc_preview}\n")
+                
+                
+                lines.append(f"  🔗 링크: {url_a}\n")
+                
+                lines.append("\n")
+            
+            lines.append(f"\n💡 국제 뉴스를 통해 다양한 관점을 파악하세요.")
+            
+            return "".join(lines)
         except requests.exceptions.RequestException as e:
             return f"NewsAPI 요청 오류: {str(e)}"
 

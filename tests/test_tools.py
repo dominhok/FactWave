@@ -14,7 +14,8 @@ from app.services.tools import (
     FREDSearchTool,
     OWIDRAGTool,
     NewsAPITool,
-    GoogleFactCheckTool
+    GoogleFactCheckTool,
+    TwitterTool
 )
 
 
@@ -71,8 +72,11 @@ def main():
         # 뉴스 도구들
         (NaverNewsTool, "Naver 뉴스", {"query": "경제", "sort": "sim", "display": 1, "start": 1}),
         (NewsAPITool, "NewsAPI", {"query": "technology", "language": "en", "page_size": 1}),
-        (GoogleFactCheckTool, "Google 팩트체크", {"query": "climate change", "language": "en"})
+        (GoogleFactCheckTool, "Google 팩트체크", {"query": "climate change", "languageCode": "en"})
     ]
+    
+    # 커뮤니티 도구
+    tests.append((TwitterTool, "Twitter/X", {"query": "Korea", "limit": 3}))
     
     success_count = 0
     total_count = len(tests)
@@ -94,6 +98,7 @@ def main():
     print(f"  통계 도구: 4개 (KOSIS, FRED, WorldBank, OWID)")
     print(f"  학술 도구: 3개 (ArXiv, OpenAlex, Wikipedia)")  
     print(f"  뉴스 도구: 3개 (Naver, NewsAPI, GoogleFC)")
+    print(f"  커뮤니티 도구: 1개 (Twitter/X)")
 
 
 if __name__ == "__main__":

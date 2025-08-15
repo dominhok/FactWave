@@ -30,9 +30,9 @@ class GoogleFactCheckTool(BaseTool):
         maxAgeDays: Optional[int] = None,
         pageSize: Optional[int] = 10,
     ) -> str:
-        api_key = os.getenv("GOOGLE_API_KEY")
+        api_key = os.getenv("GOOGLE_FACT_CHECK_API_KEY")
         if not api_key:
-            return "Google API 키가 설정되지 않았습니다. 환경변수 GOOGLE_API_KEY를 설정하세요."
+            return "Google API 키가 설정되지 않았습니다. 환경변수 GOOGLE_FACT_CHECK_API_KEY를 설정하세요."
 
         url = "https://factchecktools.googleapis.com/v1alpha1/claims:search"
         params = {

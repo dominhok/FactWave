@@ -3,156 +3,102 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-FactWave is a multi-agent fact-checking system using CrewAI framework. The system verifies claims through 5 specialized AI agents (Academic, News Verification, Social Intelligence, Logic Verification) plus a Super Agent that synthesizes results into a confidence matrix.
 
-## Architecture Overview
-- **Backend**: FastAPI with WebSocket support for real-time streaming
-- **AI Framework**: CrewAI for multi-agent orchestration
-- **Language Model**: Upstage solar-pro2 or Claude
-- **Agent System**: 4 specialized agents + 1 super agent for consensus
+FactWave is an AI-powered multi-agent fact-checking system using CrewAI orchestration with 5 specialized agents that verify information through a 3-stage collaborative process. Primary language is Korean with multilingual support.
 
-## Agent Roles
-1. **Academic Agent** (Weight: 0.3)
-   - Verifies against academic papers, government statistics
-   - APIs: Semantic Scholar, OpenAlex, ArXiv, PubMed
+## Common Development Commands
 
-2. **News Verification Agent** (Weight: 0.35)
-   - Cross-verifies news sources, checks media bias
-   - APIs: Naver News, BigKinds, NewsAPI, Google Fact Check
-
-3. **Social Intelligence Agent** (Weight: 0.15)
-   - Analyzes social media trends and public opinion
-   - APIs: YouTube Data, Discord, Telegram
-
-4. **Logic Verification Agent** (Weight: 0.2)
-   - Checks logical consistency and causal relationships
-   - Pure algorithmic analysis
-
-5. **Super Agent**
-   - Synthesizes all agent outputs
-   - Generates confidence matrix and final verdict
-
-## Key Commands
-
-### Development Setup
+### Setup and Run
 ```bash
-# Install dependencies using uv (Python 3.12+)
-uv pip install -e .
+# Install dependencies
+uv pip install -e .  # or pip install -e .
 
-# Or if uv is not installed, use pip
-pip install -e .
+# Configure environment
+cp .env.example .env  # Add required API keys
+
+# Run applications
+uv run python main.py              # Main CLI interface
+uv run python test_integrated.py tools  # Test individual tools
+uv run python test_integrated.py crew   # Test full system
+
+# Code quality
+ruff check .    # Run linting
+ruff format .   # Format code
 ```
 
-### Running the Application
+### Testing Individual Components
 ```bash
-# Development server with auto-reload
-uvicorn app.main:app --reload --ws websockets
+# Test specific tools
+uv run python test_integrated.py tools wikipedia
+uv run python test_integrated.py tools arxiv
+uv run python test_integrated.py tools naver_news
 
-# Production server
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+# Test agent system
+uv run python test_integrated.py crew "Your fact-check statement here"
 ```
-
-### Testing & Code Quality
-```bash
-# Run tests
-pytest tests/
-
-# Linting
-ruff check .
-
-# Format code
-ruff format .
-
-# Run a single test
-pytest tests/test_specific.py::test_function_name
-```
-
-## Project Structure
-```
-FactWave/
-├── app/
-│   ├── api/           # FastAPI endpoints
-│   ├── agents/        # CrewAI agent implementations
-│   ├── core/          # Core utilities
-│   └── services/      # External API integrations
-├── tests/             # Test files
-├── .env               # Environment variables
-└── pyproject.toml     # Project dependencies
-```
-
-## Environment Setup
-1. Copy `.env.example` to `.env`
-2. Configure API keys:
-   - UPSTAGE_API_KEY or ANTHROPIC_API_KEY
-   - NAVER_CLIENT_ID and NAVER_CLIENT_SECRET
-   - Other API keys as needed
 
 ## High-Level Architecture
 
-### Multi-Agent System (CrewAI)
-The fact-checking system operates through a 3-stage debate process:
-1. **Initial Analysis**: All agents independently analyze the statement
-2. **Debate Round**: Agents review each other's findings and refine positions
-3. **Final Consensus**: Super Agent synthesizes all viewpoints into final verdict
+### 3-Stage Fact-Checking Process
 
-### Agent Weights & Specializations
-- **Academic Agent (0.3)**: Scholarly sources, government data, official statistics
-- **News Verification Agent (0.35)**: Cross-references news sources, detects media bias
-- **Logic Verification Agent (0.2)**: Analyzes logical consistency and causal relationships
-- **Social Intelligence Agent (0.15)**: Monitors social media trends and public sentiment
-- **Super Agent**: Creates confidence matrix and final verdict
+1. **Stage 1: Independent Analysis** - 5 agents analyze the statement using specialized tools:
+   - Academic Agent (25% weight): Scholarly sources via Semantic Scholar, ArXiv, Wikipedia
+   - News Agent (30% weight): Media verification via Naver News, NewsAPI
+   - Statistics Agent (20% weight): Government data via KOSIS, FRED, World Bank
+   - Logic Agent (15% weight): Logical consistency analysis (no external tools)
+   - Social Agent (10% weight): Social trends via YouTube Data API
 
-### Real-time Streaming Architecture
-- WebSocket connections handle real-time updates
-- Each agent result streams as it completes
-- Progressive enhancement: users see partial results immediately
-- Fallback to REST API for quick checks (10s timeout)
+2. **Stage 2: Structured Debate** - Agents review findings and debate without tool access
 
-## API Endpoints
-- `POST /api/v1/factcheck/quick` - Quick fact check (10s timeout)
-- `WS /ws/factcheck` - Real-time fact checking via WebSocket
-- `GET /health` - Health check endpoint
+3. **Stage 3: Final Synthesis** - Super Agent creates weighted confidence matrix and final verdict
 
-## Caching Strategy
-- Use Redis for caching search results
-- Cache keys based on normalized queries
-- Implement cache warming for trending topics
+### Key Architectural Components
 
-## Error Handling
-- Graceful degradation when agents fail
-- Timeout handling (10s per agent, 25s total)
-- Clear error messages in API responses
+**Agent System (`app/agents/`)**
+- All agents inherit from `FactWaveAgent` base class
+- Lazy initialization after tool injection
+- Structured output formats for consistency
 
-## Security Considerations
-- Never expose API keys in code
-- Implement rate limiting
-- Validate all user inputs
-- Use HTTPS in production
+**Research Tools (`app/services/tools/`)**
+- 14+ specialized research tools with error handling and rate limiting
+- Caching: academic (1hr), news (30min), social (15min)
+- API keys managed via environment variables
 
-## External API Integration
-The system integrates with multiple APIs for comprehensive fact-checking:
+**RAG System (`owid_enhanced_vectordb/`)**
+- ChromaDB vector database with 40+ pre-indexed OWID datasets
+- Hybrid retrieval: vector similarity + BM25 ranking
+- Metadata filtering for precise data retrieval
 
-### Academic Sources
-- Semantic Scholar API (214M papers, free)
-- OpenAlex API (209M papers, free)
-- ArXiv, PubMed, Wikipedia APIs
-- Korean government APIs (KOSIS, public data portal)
+**Real-Time Streaming**
+- WebSocket support for progressive results
+- Tool call tracking and progress updates
+- REST API fallback with 10-second timeout
 
-### News Verification
-- Naver News API (25k requests/day)
-- BigKinds (Korean news archive)
-- Google Fact Check Tools API
-- Guardian API (free)
+### API Configuration
 
-### Social Monitoring
-- YouTube Data API (10k units/day)
-- Community APIs (Discord, Telegram)
-- Korean communities via Playwright scraping
+Required in `.env`:
+- `UPSTAGE_API_KEY` - Primary LLM (Solar-pro2)
+- `NAVER_CLIENT_ID` and `NAVER_CLIENT_SECRET` - News search
 
-## Caching Strategy
-- Redis-based caching with varying TTLs:
-  - Academic data: 1 hour (papers don't change)
-  - News data: 30 minutes (balance freshness/performance)
-  - Social data: 15 minutes (rapidly changing)
-- Cache warming for trending topics
-- Deduplication of similar queries
+Optional APIs for enhanced functionality:
+- NewsAPI, Google Fact Check, FRED, KOSIS, YouTube Data API
+- Anthropic/OpenAI as fallback LLMs
+
+### Important Patterns
+
+**Tool Integration**: Each tool extends base classes with comprehensive error handling. Check `app/services/tools/base_tool.py` for the interface.
+
+**Agent Communication**: Agents communicate through structured CrewAI tasks. Stage outputs are strictly typed dictionaries.
+
+**Vector Database**: Pre-built index in `owid_enhanced_vectordb/`. Rebuild with `python -m app.services.tools.owid_enhanced_rag --rebuild` if needed.
+
+**Caching**: Redis-based caching configured in `.env`. Falls back to in-memory if Redis unavailable.
+
+## Development Notes
+
+- Primary development on `AI` branch, frontend on `FrontEnd` branch
+- Python 3.12+ required for AI system
+- Use UV package manager for faster dependency resolution
+- All agents must implement `analyze()`, `debate()`, and return structured outputs
+- Tool failures should gracefully degrade, not crash the system
+- Korean language processing is primary, English secondary

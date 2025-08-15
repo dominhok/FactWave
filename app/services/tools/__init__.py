@@ -1,23 +1,26 @@
 """Academic research tools for FactWave agents"""
 
 # 학술/연구 도구
-from .wikipedia_tool import WikipediaSearchTool
-from .arxiv_tool import ArxivSearchTool
-from .openalex_tool import OpenAlexTool
+from .academic.wikipedia_tool import WikipediaSearchTool
+from .academic.arxiv_tool import ArxivSearchTool
+from .academic.openalex_tool import OpenAlexTool
 
 # 뉴스/미디어 도구
-from .naver_news_tool import NaverNewsTool
-from .newsapi_tool import NewsAPITool
+from .news.naver_news_tool import NaverNewsTool
+from .news.newsapi_tool import NewsAPITool
 from .gdelt_tool import GDELTTool
-from .factcheck_google_tool import GoogleFactCheckTool
+from .news.factcheck_google_tool import GoogleFactCheckTool
 
 # 자연어 검색 가능한 통계 도구
-from .kosis_search_tool import KOSISSearchTool
-from .worldbank_search_tool import WorldBankSearchTool  
-from .fred_search_tool import FREDSearchTool
+from .statistics.kosis_search_tool import KOSISSearchTool
+from .statistics.worldbank_search_tool import WorldBankSearchTool  
+from .statistics.fred_search_tool import FREDSearchTool
 
 # 특수 도구
-from .owid_rag_tool import OWIDRAGTool
+from .statistics.owid_rag_tool import OWIDRAGTool
+
+# 커뮤니티 도구
+from .community.twitter_tool import TwitterTool
 
 # LLM 에이전트가 직접 사용 가능한 도구만 export
 __all__ = [
@@ -37,6 +40,9 @@ __all__ = [
     "WorldBankSearchTool",  # World Bank 자연어 검색
     "FREDSearchTool",       # FRED 자연어 검색
     "OWIDRAGTool",          # Our World in Data RAG
+    
+    # 커뮤니티 도구
+    "TwitterTool",          # Twitter/X 커뮤니티 검색
 ]
 
 # 제거된 도구들 (코드/ID 필요):
