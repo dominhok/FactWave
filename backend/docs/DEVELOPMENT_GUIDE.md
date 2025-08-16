@@ -873,24 +873,26 @@ TWITTER_BEARER_TOKEN=xxx # Twitter API v2
 ### 개발 환경 설정
 
 ```bash
-# Python 환경 (3.12+ 권장)
+# Python 환경 (3.12+ 권장) - 백엔드 디렉터리에서 실행
+cd backend  # 루트에서 백엔드로 이동
 uv pip install -e .
 
 # 환경 변수 설정
 cp .env.example .env
 # .env 파일에 API 키들 추가
 
-# 백엔드 서버 실행
+# 백엔드 서버 실행 (backend 디렉터리에서)
 uv run python -m app.api.server
 
-# 프론트엔드 개발 서버 실행 (별도 터미널)
-npm run dev
+# 프론트엔드 개발 서버 실행 (별도 터미널, frontend_minho 디렉터리에서)
+cd ../frontend_minho && npm install  # 최초 1회
+cd ../frontend_minho && npm run dev
 
-# 개별 도구 테스트
+# 개별 도구 테스트 (backend 디렉터리에서)
 uv run python test_integrated.py tools wikipedia
 uv run python test_integrated.py tools naver_news
 
-# 전체 시스템 테스트
+# 전체 시스템 테스트 (backend 디렉터리에서)
 uv run python test_integrated.py crew "테스트 문장"
 ```
 

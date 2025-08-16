@@ -10,36 +10,37 @@ FactWave is an AI-powered multi-agent fact-checking system using CrewAI orchestr
 
 ### Setup and Run
 ```bash
-# Install dependencies
-uv pip install -e .  # or pip install -e .
+# Install backend dependencies
+cd backend && uv pip install -e .  # or pip install -e .
 
 # Configure environment
-cp .env.example .env  # Add required API keys
+cp backend/.env.example backend/.env  # Add required API keys
 
-# Run applications
-uv run python main.py              # Main CLI interface
-uv run python -m app.api.server    # FastAPI WebSocket server (port 8000)
-uv run python test_integrated.py tools  # Test individual tools
-uv run python test_integrated.py crew   # Test full system
+# Run backend applications
+cd backend && uv run python main.py              # Main CLI interface
+cd backend && uv run python -m app.api.server    # FastAPI WebSocket server (port 8000)
+cd backend && uv run python test_integrated.py tools  # Test individual tools
+cd backend && uv run python test_integrated.py crew   # Test full system
 
 # Frontend development
-npm run dev                         # Vite dev server (port 5173)
-npm run build                       # Build for production
+cd frontend_minho && npm install          # Install frontend dependencies
+cd frontend_minho && npm run dev           # Vite dev server (port 5173)
+cd frontend_minho && npm run build         # Build for production
 
 # Code quality
-ruff check .    # Run linting
-ruff format .   # Format code
+cd backend && ruff check .    # Run linting
+cd backend && ruff format .   # Format code
 ```
 
 ### Testing Individual Components
 ```bash
 # Test specific tools
-uv run python test_integrated.py tools wikipedia
-uv run python test_integrated.py tools arxiv
-uv run python test_integrated.py tools naver_news
+cd backend && uv run python test_integrated.py tools wikipedia
+cd backend && uv run python test_integrated.py tools arxiv
+cd backend && uv run python test_integrated.py tools naver_news
 
 # Test agent system
-uv run python test_integrated.py crew "Your fact-check statement here"
+cd backend && uv run python test_integrated.py crew "Your fact-check statement here"
 ```
 
 ## High-Level Architecture
@@ -84,7 +85,7 @@ uv run python test_integrated.py crew "Your fact-check statement here"
 - ChromaDB vector database with 40+ pre-indexed OWID datasets
 - Hybrid retrieval: vector similarity + BM25 ranking
 - Metadata filtering for precise data retrieval
-- Rebuild with `python -m app.services.tools.owid_enhanced_rag --rebuild`
+- Rebuild with `cd backend && python -m app.services.tools.owid_enhanced_rag --rebuild`
 
 **Real-Time Streaming (`app/api/`, `app/core/streaming_crew.py`)**
 - FastAPI WebSocket server at `ws://localhost:8000/ws/{session_id}`
@@ -111,33 +112,33 @@ Optional APIs for enhanced functionality:
 
 ### Important Patterns
 
-**Prompt Engineering**: All prompts are centrally managed in `app/config/prompts.yaml`. Use `PromptLoader` class to access and modify prompts. Markdown formatting is disabled for cleaner frontend display.
+**Prompt Engineering**: All prompts are centrally managed in `backend/app/config/prompts.yaml`. Use `PromptLoader` class to access and modify prompts. Markdown formatting is disabled for cleaner frontend display.
 
-**Tool Integration**: Each tool extends `base_tool.py` interface. All tools preserve original API metadata without transformations. LLM performs all analysis and formatting.
+**Tool Integration**: Each tool extends `backend/app/services/tools/base_tool.py` interface. All tools preserve original API metadata without transformations. LLM performs all analysis and formatting.
 
 **Task Callbacks**: Use `callback` field (singular) on CrewAI Tasks for real-time updates. StreamingFactWaveCrew handles async/sync bridging.
 
 **Agent Communication**: Agents communicate through structured CrewAI tasks. Stage outputs use simplified templates from YAML configuration.
 
-**Vector Database**: Pre-built OWID index in `owid_enhanced_vectordb/`. Contains 40+ datasets with CSV and metadata.
+**Vector Database**: Pre-built OWID index in `backend/owid_enhanced_vectordb/`. Contains 40+ datasets with CSV and metadata.
 
 **Frontend-Backend Integration**: WebSocket messages use event-based architecture. Backend sends task status events immediately when tasks start/complete.
 
 ### Development Workflow
 
 **Backend Development**:
-1. Start server: `uv run python -m app.api.server`
-2. Test tools: `uv run python test_integrated.py tools`
-3. Test full system: `uv run python test_integrated.py crew "test statement"`
+1. Start server: `cd backend && uv run python -m app.api.server`
+2. Test tools: `cd backend && uv run python test_integrated.py tools`
+3. Test full system: `cd backend && uv run python test_integrated.py crew "test statement"`
 
 **Frontend Development**:
 1. Start backend first (port 8000)
-2. Start frontend: `npm run dev` (port 5173)
-3. Test WebSocket: Use `test_websocket_client.py`
+2. Start frontend: `cd frontend_minho && npm run dev` (port 5173)
+3. Test WebSocket: Use `cd backend && python test_websocket_client.py`
 
 **Prompt Modification**:
-1. Edit `app/config/prompts.yaml`
-2. Test with `crew.py` or `streaming_crew.py`
+1. Edit `backend/app/config/prompts.yaml`
+2. Test with `backend/app/core/crew.py` or `backend/app/core/streaming_crew.py`
 3. No restart required - prompts loaded dynamically
 
 ## Development Notes
