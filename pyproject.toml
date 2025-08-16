@@ -78,6 +78,8 @@ dependencies = [
     "pytest",
     "pytest-asyncio",
     "twscrape>=0.17.0",
+    "websockets>=15.0.1",
+    "python-multipart>=0.0.20",
 ]
 
 [project.optional-dependencies]
