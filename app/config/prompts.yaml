@@ -1,0 +1,102 @@
+# FactWave 프롬프트 설정
+# 모든 에이전트의 프롬프트를 중앙 관리
+
+verdict_options:
+  참: "명백히 사실임"
+  대체로_참: "대체로 사실임"
+  부분적_참: "부분적으로 사실임"
+  불확실: "판단하기 어려움"
+  정보부족: "정보가 부족함"
+  논란중: "논란이 있음"
+  부분적_거짓: "부분적으로 거짓임"
+  대체로_거짓: "대체로 거짓임"
+  거짓: "명백히 거짓임"
+  과장됨: "과장된 표현임"
+  오해소지: "오해의 소지가 있는 표현임"
+  시대착오: "시대에 맞지 않음(과거에는 맞았으나 지금은 아님)"
+
+agent_weights:
+  academic: 0.25
+  news: 0.30
+  logic: 0.15
+  social: 0.10
+  statistics: 0.20
+
+# Step 1: 초기 분석 프롬프트
+step1:
+  logic:
+    template: |
+      주장: {statement}
+      
+      논리 및 추론 전문가로서 이 주장을 분석하세요.
+      
+      다음 JSON 형식으로 응답하세요:
+      {{
+        "agent_name": "logic",
+        "verdict": "[참/대체로_참/부분적_참/불확실/정보부족/논란중/부분적_거짓/대체로_거짓/거짓/과장됨/오해소지/시대착오]",
+        "key_findings": ["전제와 결론 분석", "논리적 구조 검토", "발견된 오류나 문제점"],
+        "evidence_sources": ["논리적 분석"],
+        "reasoning": "판정 근거와 논리적 검토 과정"
+      }}
+  
+  general:
+    template: |
+      주장: {statement}
+      
+      {role}로서 이 주장을 전문적으로 분석하세요.
+      
+      다음 JSON 형식으로 응답하세요:
+      {{
+        "agent_name": "{agent_name}",
+        "verdict": "[참/대체로_참/부분적_참/불확실/정보부족/논란중/부분적_거짓/대체로_거짓/거짓/과장됨/오해소지/시대착오]",
+        "key_findings": ["핵심 발견사항 1", "핵심 발견사항 2", "핵심 발견사항 3"],
+        "evidence_sources": ["출처1", "출처2", "출처3"],
+        "reasoning": "판정 근거 및 상세한 분석 내용"
+      }}
+
+# Step 2: 토론 프롬프트  
+step2:
+  template: |
+    주장: {statement}
+    
+    {role}로서 다른 전문가들의 Step 1 분석을 검토하고 토론하세요.
+    
+    다음 JSON 형식으로 응답하세요:
+    {{
+      "agent_name": "{agent_name}",
+      "agreements": ["동의하는 점 1", "동의하는 점 2"],
+      "disagreements": ["이견이나 보완점 1", "이견이나 보완점 2"],
+      "additional_perspective": "내 전문성으로 추가하는 관점과 새로운 인사이트",
+      "final_verdict": "[참/대체로_참/부분적_참/불확실/정보부족/논란중/부분적_거짓/대체로_거짓/거짓/과장됨/오해소지/시대착오]"
+    }}
+
+# Step 3: 최종 종합 프롬프트
+step3:
+  template: |
+    주장: {statement}
+    
+    팩트체크 총괄 코디네이터로서 모든 전문가들의 분석과 토론을 종합하여 최종 판정을 내리세요.
+    
+    다음 JSON 형식으로 응답하세요:
+    {{
+      "final_verdict": "[참/대체로_참/부분적_참/불확실/정보부족/논란중/부분적_거짓/대체로_거짓/거짓/과장됨/오해소지/시대착오]",
+      "key_agreements": ["주요 합의점 1", "주요 합의점 2", "주요 합의점 3"],
+      "key_disagreements": ["주요 불일치점 1", "주요 불일치점 2"],
+      "verdict_reasoning": "최종 판정에 대한 상세한 근거와 각 전문가의 의견을 종합한 결론",
+      "summary": "팩트체킹 결과의 간단한 요약"
+    }}
+
+# 출력 형식 가이드라인
+output_format:
+  no_markdown: true  # 마크다운 사용 금지
+  plain_text: true   # 일반 텍스트로만 출력
+  no_emoji: false    # 이모지는 허용 (UI용)
+  max_length: 500    # 최대 출력 길이
+  bullet_style: "•"  # 불릿 스타일
+  
+# 응답 스타일
+response_style:
+  concise: true      # 간결한 응답
+  structured: true   # 구조화된 형식
+  no_headers: true   # ### 같은 헤더 금지
+  simple_lists: true # 단순 목록 사용

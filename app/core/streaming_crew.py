@@ -17,6 +17,7 @@ from ..agents import (
     LogicAgent, StatisticsAgent, SuperAgent
 )
 from ..utils.websocket_manager import WebSocketManager, StreamingCallback
+from ..utils.prompt_loader import PromptLoader
 from .crew import FactWaveCrew
 
 logger = logging.getLogger(__name__)
@@ -25,42 +26,44 @@ logger = logging.getLogger(__name__)
 class StreamingFactWaveCrew:
     """WebSocket 스트리밍을 지원하는 3단계 팩트체킹 프로세스"""
     
-    # 판정 옵션 (FactWaveCrew와 동일)
-    VERDICT_OPTIONS = {
-        "참": "명백히 사실임",
-        "대체로_참": "대체로 사실임",
-        "부분적_참": "부분적으로 사실임",
-        "불확실": "판단하기 어려움",
-        "정보부족": "정보가 부족함",
-        "논란중": "논란이 있음",
-        "부분적_거짓": "부분적으로 거짓임",
-        "대체로_거짓": "대체로 거짓임",
-        "거짓": "명백히 거짓임",
-        "과장됨": "과장된 표현임",
-        "오해소지": "오해의 소지가 있는 표현임",
-        "시대착오": "시대에 맞지 않음(과거에는 맞았으나 지금은 아님)"
-    }
-    
-    # 에이전트 가중치 (FactWaveCrew와 동일)
-    AGENT_WEIGHTS = {
-        "academic": 0.25,
-        "news": 0.30,
-        "logic": 0.15,
-        "social": 0.10,
-        "statistics": 0.20
-    }
-    
     def __init__(self, websocket_callback: Optional[Callable] = None):
         """
         Args:
             websocket_callback: WebSocket으로 메시지를 보낼 콜백 함수
         """
+        # 프롬프트 로더 초기화
+        self.prompt_loader = PromptLoader()
+        
+        # YAML에서 설정 로드
+        self.VERDICT_OPTIONS = self.prompt_loader.get_verdict_options()
+        self.AGENT_WEIGHTS = self.prompt_loader.get_agent_weights()
+        
         # WebSocket 관리자 설정
         self.ws_manager = WebSocketManager(callback=websocket_callback)
         self.streaming_callback = StreamingCallback(self.ws_manager)
         
-        # 실제 FactWaveCrew 인스턴스 사용
-        self.fact_crew = FactWaveCrew()
+        # Task 콜백 생성 (동기 함수로 래핑)
+        def task_callback(task_event):
+            # Task 이벤트를 WebSocket으로 전송
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.create_task(self._handle_task_event(task_event))
+                else:
+                    loop.run_until_complete(self._handle_task_event(task_event))
+            except RuntimeError:
+                # 루프가 없거나 실행 중이 아닌 경우 새 스레드에서 실행
+                import threading
+                def run_async():
+                    new_loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(new_loop)
+                    new_loop.run_until_complete(self._handle_task_event(task_event))
+                    new_loop.close()
+                thread = threading.Thread(target=run_async)
+                thread.start()
+        
+        # 실제 FactWaveCrew 인스턴스 사용 (task_callback 전달)
+        self.fact_crew = FactWaveCrew(task_callback=task_callback)
         
         # FactWaveCrew의 콜백을 WebSocket 스트리밍으로 대체
         self.fact_crew._step_callback = self._websocket_step_callback
@@ -73,6 +76,66 @@ class StreamingFactWaveCrew:
         
         # executor for async operations
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    
+    async def _handle_task_event(self, task_event: Dict[str, Any]):
+        """
+        Task 이벤트 처리 (Task 시작/완료 시 즉시 전송)
+        """
+        try:
+            event_type = task_event.get("type")
+            status = task_event.get("status")
+            agent = task_event.get("agent")
+            step = task_event.get("step")
+            
+            if event_type == "task_status":
+                if status == "started":
+                    # Task 시작 즉시 알림
+                    await self.ws_manager.emit({
+                        "type": "task_started",
+                        "step": step,
+                        "agent": agent,
+                        "content": {
+                            "message": f"{self.fact_crew.agents[agent].role} 작업 시작",
+                            "task_id": str(task_event.get("task_id", ""))[:8],
+                            "role": self.fact_crew.agents[agent].role
+                        }
+                    })
+                    logger.info(f"Task started: {agent} in {step}")
+                    
+                elif status == "completed":
+                    # Task 완료 즉시 알림
+                    output = task_event.get("output", "")
+                    
+                    # 분석 결과 추출
+                    analysis = self._extract_full_answer(output) if output else "완료"
+                    verdict = self._extract_verdict(output) if output else "분석중"
+                    confidence = self._extract_confidence(output) if output else 0.5
+                    
+                    await self.ws_manager.emit({
+                        "type": "task_completed",
+                        "step": step,
+                        "agent": agent,
+                        "content": {
+                            "message": f"{self.fact_crew.agents[agent].role} 작업 완료",
+                            "analysis": analysis,  # 전체 JSON 응답 전송
+                            "verdict": verdict,
+                            "confidence": confidence,
+                            "role": self.fact_crew.agents[agent].role
+                        }
+                    })
+                    logger.info(f"Task completed: {agent} in {step}")
+                    
+                    # 에이전트 완료 상태 업데이트
+                    if agent not in self.fact_crew.completed_agents[step]:
+                        self.fact_crew.completed_agents[step].append(agent)
+                    
+                    # 단계 완료 체크
+                    if self._is_step_complete(step):
+                        await self._handle_step_completion(step)
+        
+        except Exception as e:
+            logger.error(f"Task event handling error: {e}")
+            await self.ws_manager.emit_error(str(e), {"task_event": task_event})
     
     def _websocket_step_callback(self, agent_output: Any):
         """FactWaveCrew의 step_callback을 WebSocket 스트리밍으로 대체 (동기 버전)"""
@@ -108,7 +171,76 @@ class StreamingFactWaveCrew:
         try:
             output_str = str(agent_output)
             
-            # 현재 에이전트 파악
+            # Task Completion 감지 (✅ Completed 패턴 또는 Task Completed)
+            if ("✅ Completed" in output_str or "Task Completed" in output_str) and "Task:" in output_str:
+                # Task 정보 추출
+                import re
+                task_match = re.search(r'Task:\s*([a-f0-9-]+)', output_str)
+                agent_match = re.search(r'Assigned to:\s*([^\n]+)', output_str)
+                
+                if task_match and agent_match:
+                    task_id = task_match.group(1)
+                    agent_role = agent_match.group(1).strip()
+                    
+                    # 에이전트 이름 매핑
+                    agent_name = self._get_agent_name_from_role(agent_role)
+                    if agent_name:
+                        step_info = self._identify_current_step()
+                        if step_info:
+                            step_key, step_name = step_info
+                            
+                            # Task 완료 즉시 전송 (이벤트 기반)
+                            await self._handle_task_event({
+                                "type": "task_status",
+                                "step": step_key,
+                                "agent": agent_name,
+                                "status": "completed",
+                                "output": output_str
+                            })
+                            logger.info(f"Task completion detected for {agent_name} in {step_key}")
+            
+            # Agent Final Answer 감지
+            if "Agent Final Answer" in output_str or "✅ Agent Final Answer" in output_str:
+                # 에이전트와 답변 추출
+                agent_match = re.search(r'Agent:\s*([^\n]+)', output_str)
+                if agent_match:
+                    agent_role = agent_match.group(1).strip()
+                    agent_name = self._get_agent_name_from_role(agent_role)
+                    
+                    if agent_name:
+                        step_info = self._identify_current_step()
+                        if step_info:
+                            step_key, step_name = step_info
+                            
+                            # Final Answer 내용 추출
+                            answer_start = output_str.find("Final Answer:")
+                            if answer_start == -1:
+                                answer_start = output_str.find("최종 답변:")
+                            
+                            if answer_start != -1:
+                                answer_content = output_str[answer_start:]
+                                
+                                # 에이전트 완료 메시지 전송
+                                await self.streaming_callback.on_task_complete(
+                                    agent_name,
+                                    {
+                                        "analysis": self._extract_full_answer(answer_content),
+                                        "verdict": self._extract_verdict(answer_content),
+                                        "confidence": self._extract_confidence(answer_content)
+                                    },
+                                    step_key
+                                )
+                                
+                                # 완료 상태 업데이트
+                                if agent_name not in self.fact_crew.completed_agents[step_key]:
+                                    self.fact_crew.completed_agents[step_key].append(agent_name)
+                                
+                                # 단계 완료 체크
+                                if self._is_step_complete(step_key):
+                                    await self._handle_step_completion(step_key)
+                                return
+            
+            # 기존 로직 (현재 에이전트 파악)
             current_agent = self._identify_current_agent(output_str)
             if not current_agent:
                 return
@@ -137,27 +269,6 @@ class StreamingFactWaveCrew:
             
             # 에이전트 분석 내용 스트리밍 (변경된 부분만)
             await self._stream_agent_analysis(output_str, current_agent, step_key)
-            
-            # 에이전트 완료 체크
-            if self._is_agent_complete(output_str):
-                # 에이전트 완료 상태 업데이트
-                if current_agent not in self.fact_crew.completed_agents[step_key]:
-                    self.fact_crew.completed_agents[step_key].append(current_agent)
-                
-                # 완료 알림
-                await self.streaming_callback.on_task_complete(
-                    current_agent,
-                    {
-                        "analysis": self._extract_analysis_summary(output_str),
-                        "verdict": self._extract_verdict(output_str),
-                        "confidence": self._extract_confidence(output_str)
-                    },
-                    step_key
-                )
-                
-                # 단계 완료 체크
-                if self._is_step_complete(step_key):
-                    await self._handle_step_completion(step_key)
             
             # 마지막 출력 저장
             self.last_agent_outputs[agent_key] = output_str
@@ -247,7 +358,9 @@ class StreamingFactWaveCrew:
         """에이전트 작업 완료 여부 확인"""
         completion_indicators = [
             "분석 완료", "완료했습니다", "최종", "결론:", "판정:",
-            "Final Answer:", "분석을 마치겠습니다", "종료"
+            "Final Answer:", "분석을 마치겠습니다", "종료",
+            "✅ Completed", "Task Completed", "Agent Final Answer",
+            "### 판정:", "## 판정:", "최종 판정:"
         ]
         return any(indicator in output_str for indicator in completion_indicators)
     
@@ -285,6 +398,31 @@ class StreamingFactWaveCrew:
                 "총괄 코디네이터가 최종 판정을 내립니다"
             )
     
+    def _get_agent_name_from_role(self, role: str) -> Optional[str]:
+        """역할명으로부터 에이전트 이름 추출"""
+        role_mapping = {
+            "학술 연구 전문가": "academic",
+            "뉴스 검증 전문가": "news",
+            "사회 맥락 분석가": "social",
+            "논리 및 추론 전문가": "logic",
+            "통계 및 데이터 전문가": "statistics",
+            "팩트체크 총괄 코디네이터": "super"
+        }
+        return role_mapping.get(role)
+    
+    def _extract_full_answer(self, output_str: str) -> str:
+        """전체 Final Answer 추출"""
+        # Final Answer: 이후의 모든 내용 추출
+        if "Final Answer:" in output_str:
+            answer_part = output_str.split("Final Answer:", 1)[1]
+        elif "최종 답변:" in output_str:
+            answer_part = output_str.split("최종 답변:", 1)[1]
+        else:
+            answer_part = output_str
+        
+        # 첫 500자 또는 주요 내용 반환
+        return answer_part.strip()[:1000] if len(answer_part) > 1000 else answer_part.strip()
+    
     def _extract_analysis_summary(self, output_str: str) -> str:
         """분석 요약 추출"""
         lines = output_str.split('\n')
@@ -294,7 +432,7 @@ class StreamingFactWaveCrew:
             if any(keyword in line for keyword in ["판정:", "결론:", "분석:", "핵심", "요약"]):
                 summary_lines.append(line.strip())
         
-        return "\n".join(summary_lines[:3]) if summary_lines else output_str[:200] + "..."
+        return "\n".join(summary_lines[:5]) if summary_lines else output_str[:500] + "..."
     
     def _extract_verdict(self, output_str: str) -> str:
         """판정 추출"""
@@ -322,7 +460,7 @@ class StreamingFactWaveCrew:
             "final_verdict": self._extract_verdict(result_str),
             "confidence": self._calculate_weighted_confidence(),
             "verdict_korean": self.VERDICT_OPTIONS.get(self._extract_verdict(result_str), "분석 완료"),
-            "summary": result_str[:500] + "..." if len(result_str) > 500 else result_str,
+            "summary": result_str,  # 전체 응답 포함
             "agent_verdicts": self._get_agent_verdicts(),
             "evidence_summary": self._get_evidence_summary(),
             "tool_usage_stats": self._get_tool_usage_stats(),

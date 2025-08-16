@@ -9,6 +9,7 @@ from rich.table import Table
 import time
 
 from ..agents import AcademicAgent, NewsAgent, SocialAgent, LogicAgent, StatisticsAgent, SuperAgent
+from ..utils.prompt_loader import PromptLoader
 
 
 console = Console()
@@ -17,32 +18,18 @@ console = Console()
 class FactWaveCrew:
     """3단계 팩트체킹 프로세스를 관리하는 메인 클래스"""
     
-    # 판정 옵션
-    VERDICT_OPTIONS = {
-        "참": "명백히 사실임",
-        "대체로_참": "대체로 사실임",
-        "부분적_참": "부분적으로 사실임",
-        "불확실": "판단하기 어려움",
-        "정보부족": "정보가 부족함",
-        "논란중": "논란이 있음",
-        "부분적_거짓": "부분적으로 거짓임",
-        "대체로_거짓": "대체로 거짓임",
-        "거짓": "명백히 거짓임",
-        "과장됨": "과장된 표현임",
-        "오해소지": "오해의 소지가 있는 표현임",
-        "시대착오": "시대에 맞지 않음(과거에는 맞았으나 지금은 아님)"
-    }
+    def __init__(self, task_callback=None):
+        """
+        Args:
+            task_callback: Task 상태 변경 시 호출될 콜백 함수
+        """
+        # 프롬프트 로더 초기화
+        self.prompt_loader = PromptLoader()
+        
+        # YAML에서 설정 로드
+        self.VERDICT_OPTIONS = self.prompt_loader.get_verdict_options()
+        self.AGENT_WEIGHTS = self.prompt_loader.get_agent_weights()
     
-    # 에이전트 가중치 (5개 에이전트로 조정)
-    AGENT_WEIGHTS = {
-        "academic": 0.25,
-        "news": 0.30,
-        "logic": 0.15,
-        "social": 0.10,
-        "statistics": 0.20
-    }
-    
-    def __init__(self):
         # Initialize agents
         self.agents = {
             "academic": AcademicAgent(),
@@ -70,6 +57,7 @@ class FactWaveCrew:
         }
         self.current_step = None
         self.current_agent = None
+        self.task_callback = task_callback  # Task 레벨 콜백
     
     def create_step1_tasks(self, statement: str) -> List[Task]:
         """Step 1: 각 에이전트가 독립적으로 초기 분석 수행"""
@@ -81,84 +69,45 @@ class FactWaveCrew:
         for agent_name, agent_instance in self.agents.items():
             if agent_name != "super":  # Super agent는 Step 3에서만 활동
                 if agent_name == "logic":
-                    # 논리 전문가에게는 특별한 지시
-                    description = f"""
-🎯 주장: "{statement}"
-
-당신은 논리 및 추론 전문가입니다.
-순수 논리적 관점에서 주장을 분석하세요. (도구 사용 없음)
-
-📋 필수 분석 항목:
-
-1️⃣ **논리적 구조 분석**
-   - 전제(Premise): [주장이 가정하는 것]
-   - 결론(Conclusion): [주장이 도출하는 것]
-   - 추론 형식: [귀납적/연역적/유추적]
-
-2️⃣ **논리적 타당성 평가**
-   □ 논리적으로 타당함 (Sound)
-   □ 형식은 맞지만 전제가 의심스러움 (Valid but questionable)
-   □ 논리적 오류 있음 (Fallacious)
-   □ 판단 불가 (Indeterminate)
-
-3️⃣ **발견된 논리적 오류** (있다면)
-   - [ ] 순환논증 (Circular reasoning)
-   - [ ] 허수아비 논증 (Straw man)
-   - [ ] 성급한 일반화 (Hasty generalization)
-   - [ ] 인과관계 오류 (False cause)
-   - [ ] 거짓 딜레마 (False dilemma)
-   - [ ] 기타: ___________
-
-4️⃣ **논리적 신뢰도**: ___% (0-100)
-   - 순수 논리 관점에서의 신뢰도
-
-5️⃣ **검증 필요 사항**
-   - 전제의 사실성 확인 필요
-   - 숨은 가정들
-   - 맥락 정보 필요성
-
-⚠️ 중요: 외부 데이터 없이 순수 논리로만 분석
-"""
+                    # 논리 전문가용 프롬프트
+                    description = self.prompt_loader.get_step1_prompt('logic', statement, agent_name=agent_name)
                 else:
-                    description = f"""
-🎯 주장: "{statement}"
-
-당신은 {agent_instance.role}입니다.
-
-주장을 먼저 분석하고, 필요한 도구만 선택적으로 사용하세요:
-• 통계/수치가 핵심이면 → 관련 데이터 도구 우선 사용
-• 최근 사건이면 → 뉴스 도구 집중 활용  
-• 학술적 주장이면 → 논문 검색 도구 활용
-• 여론/트렌드면 → 소셜 도구 활용
-
-📋 분석 결과:
-
-### 판정: [참/거짓/불확실 등 - 명확하게]
-
-### 핵심 발견사항:
-1. [가장 중요한 증거/데이터]
-2. [두 번째 증거/데이터]
-3. [추가 증거 - 있다면]
-
-### 근거 출처:
-- [어떤 도구에서 무엇을 찾았는지]
-- [구체적 수치나 인용]
-
-### 한계점:
-- [찾지 못한 정보나 불확실한 부분]
-
-💡 도구 사용 팁:
-- 모든 도구를 다 쓸 필요 없음
-- 주장의 핵심에 맞는 도구 2-3개만 선택
-- 시간 효율적으로 가장 관련 있는 정보 수집
-"""
+                    # 일반 에이전트용 프롬프트
+                    description = self.prompt_loader.get_step1_prompt('general', statement, agent_instance.role, agent_name)
+                # Task 콜백 생성
+                if self.task_callback:
+                    def make_task_callback(agent_n, step):
+                        def callback(output):
+                            self.task_callback({
+                                "type": "task_status",
+                                "step": step,
+                                "agent": agent_n,
+                                "status": "completed",
+                                "output": str(output)
+                            })
+                        return callback
+                    task_callback_func = make_task_callback(agent_name, "step1")
+                else:
+                    task_callback_func = None
+                
                 task = Task(
                     description=description,
-                    agent=agent_instance.get_agent(),
-                    expected_output="판정, 근거, 신뢰도를 포함한 구조화된 분석"
+                    agent=agent_instance.get_agent("step1"),
+                    expected_output="판정, 근거, 신뢰도를 포함한 구조화된 분석",
+                    callback=task_callback_func  # callback 필드 사용
                 )
                 tasks.append(task)
                 self.step1_tasks[agent_name] = task
+                
+                # Task 시작 알림
+                if self.task_callback:
+                    self.task_callback({
+                        "type": "task_status",
+                        "step": "step1",
+                        "agent": agent_name,
+                        "status": "started",
+                        "task_id": str(task.id)
+                    })
         
         return tasks
     
@@ -175,55 +124,44 @@ class FactWaveCrew:
                 # 다른 에이전트들의 초기 분석을 context로 전달
                 context_tasks = [task for name, task in self.step1_tasks.items() if name != agent_name]
                 
-                description = f"""
-💬 **Step 2: 토론 라운드**
-🎯 주장: "{statement}"
-
-당신은 {agent_instance.role}입니다.
-다른 전문가들의 Step 1 분석을 모두 읽었습니다. 이제 건설적인 토론을 시작하세요!
-
-📋 **필수 토론 형식** (반드시 아래 구조를 따르세요):
-
-═══════════════════════════════════════════
-### 1️⃣ 동의하는 점들 ✅
-═══════════════════════════════════════════
-예시:
-• [학술 연구 전문가]의 논문 인용이 정확합니다. 특히 OpenAlex에서 찾은 2024년 연구가 핵심입니다.
-• [통계 전문가]의 KOSIS 데이터(3.5% 실업률)는 제가 찾은 뉴스 보도와 일치합니다.
-
-### 2️⃣ 이견/보완 사항 ⚠️
-═══════════════════════════════════════════
-예시:
-• [사회 맥락 분석가]의 Twitter 분석은 편향 가능성이 있습니다. 소셜 미디어는 특정 연령층에 치우쳐...
-• [뉴스 검증 전문가]가 인용한 기사는 2년 전 자료입니다. 최신 상황과 다를 수 있습니다.
-
-### 3️⃣ 내 전문성으로 추가하는 관점 💡
-═══════════════════════════════════════════
-{agent_instance.role}로서 강조하고 싶은 점:
-• [Step 1에서 내가 찾은 구체적 데이터/증거]
-• [다른 에이전트가 놓친 중요한 측면]
-
-### 4️⃣ 종합 판정 조정 🎯
-═══════════════════════════════════════════
-토론 후 수정된 나의 판정: [판정]
-신뢰도: ___% (이전: ___%)
-조정 이유: [무엇 때문에 판정을 바꿨는지/유지했는지]
-
-⚠️ **토론 규칙**:
-- 도구 사용 금지 (Step 1 데이터만 활용)
-- 구체적 근거 인용 필수
-- 상대 전문성 존중
-- 감정적 표현 자제
-"""
+                # Step 2 토론 프롬프트
+                description = self.prompt_loader.get_step2_prompt(statement, agent_instance.role, agent_name)
+                
+                # Task 콜백 생성
+                if self.task_callback:
+                    def make_task_callback(agent_n, step):
+                        def callback(output):
+                            self.task_callback({
+                                "type": "task_status",
+                                "step": step,
+                                "agent": agent_n,
+                                "status": "completed",
+                                "output": str(output)
+                            })
+                        return callback
+                    task_callback_func = make_task_callback(agent_name, "step2")
+                else:
+                    task_callback_func = None
                 
                 task = Task(
                     description=description,
-                    agent=agent_instance.get_agent(),
+                    agent=agent_instance.get_agent("step2"),
                     expected_output="다른 에이전트의 의견을 고려한 개선된 분석",
-                    context=context_tasks  # 다른 에이전트들의 Step 1 결과를 참조
+                    context=context_tasks,  # 다른 에이전트들의 Step 1 결과를 참조
+                    callback=task_callback_func  # callback 필드 사용
                 )
                 tasks.append(task)
                 self.step2_tasks[agent_name] = task
+                
+                # Task 시작 알림
+                if self.task_callback:
+                    self.task_callback({
+                        "type": "task_status",
+                        "step": "step2",
+                        "agent": agent_name,
+                        "status": "started",
+                        "task_id": str(task.id)
+                    })
         
         return tasks
     
@@ -235,40 +173,44 @@ class FactWaveCrew:
         # 모든 Step 1과 Step 2의 결과를 context로 전달
         all_context_tasks = list(self.step1_tasks.values()) + list(self.step2_tasks.values())
         
-        verdict_options_str = "\n".join([f"- {k}: {v}" for k, v in self.VERDICT_OPTIONS.items()])
+        # Step 3 최종 종합 프롬프트
+        description = self.prompt_loader.get_step3_prompt(statement, self.AGENT_WEIGHTS)
         
-        description = f"""
-수석 코디네이터로서 모든 에이전트의 분석을 종합하세요: "{statement}"
-
-다음을 포함한 최종 팩트체크 보고서를 작성하세요:
-1. 전체 판정 - 반드시 다음 중 하나를 선택:
-{verdict_options_str}
-
-2. 각 에이전트의 평가를 보여주는 신뢰도 매트릭스
-3. 주요 합의점
-4. 주요 불일치점
-5. 최종 신뢰도 점수 (가중 평균)
-6. 판정에 대한 간단한 설명
-
-에이전트 가중치: 학술(25%), 뉴스(30%), 논리(15%), 사회(10%), 통계(20%)
-
-모든 에이전트의 초기 분석(Step 1)과 토론 결과(Step 2)를 종합적으로 검토하세요.
-각 에이전트의 가중치를 고려하여 최종 신뢰도를 계산하세요.
-
-에이전트 가중치:
-- Academic Agent: {self.AGENT_WEIGHTS['academic']}
-- News Agent: {self.AGENT_WEIGHTS['news']}  
-- Logic Agent: {self.AGENT_WEIGHTS['logic']}
-- Social Agent: {self.AGENT_WEIGHTS['social']}
-- Statistics Agent: {self.AGENT_WEIGHTS['statistics']}
-"""
+        # 판정 옵션 추가
+        verdict_options_str = self.prompt_loader.format_verdict_options_string()
+        description = description.replace("[선택]", f"[다음 중 선택:\n{verdict_options_str}]")
+        
+        # Task 콜백 생성
+        if self.task_callback:
+            def callback(output):
+                self.task_callback({
+                    "type": "task_status",
+                    "step": "step3",
+                    "agent": "super",
+                    "status": "completed",
+                    "output": str(output)
+                })
+            task_callback_func = callback
+        else:
+            task_callback_func = None
         
         self.step3_task = Task(
             description=description,
-            agent=self.agents["super"].get_agent(),
+            agent=self.agents["super"].get_agent("step3"),
             expected_output="신뢰도 매트릭스와 함께 종합적인 팩트체크 판정",
-            context=all_context_tasks  # 모든 이전 단계의 결과를 참조
+            context=all_context_tasks,  # 모든 이전 단계의 결과를 참조
+            callback=task_callback_func  # callback 필드 사용
         )
+        
+        # Task 시작 알림
+        if self.task_callback:
+            self.task_callback({
+                "type": "task_status",
+                "step": "step3",
+                "agent": "super",
+                "status": "started",
+                "task_id": str(self.step3_task.id)
+            })
         
         return self.step3_task
     
@@ -430,7 +372,7 @@ class FactWaveCrew:
             
             # 개별 crew로 각 에이전트 실행
             individual_crew = Crew(
-                agents=[agent_instance.get_agent()],
+                agents=[agent_instance.get_agent("step1")],
                 tasks=[step1_tasks[i]],
                 process=Process.sequential,
                 verbose=True,
@@ -498,7 +440,7 @@ class FactWaveCrew:
         step2_tasks = self.create_step2_tasks(statement)
         
         # Step 2는 순차적으로 (서로의 의견을 참조해야 하므로)
-        step2_agents = [self.agents[name].get_agent() for name in ["academic", "news", "social", "logic", "statistics"]]
+        step2_agents = [self.agents[name].get_agent("step2") for name in ["academic", "news", "social", "logic", "statistics"]]
         
         step2_crew = Crew(
             agents=step2_agents,
@@ -532,7 +474,7 @@ class FactWaveCrew:
         step3_task = self.create_step3_task(statement)
         
         step3_crew = Crew(
-            agents=[self.agents["super"].get_agent()],
+            agents=[self.agents["super"].get_agent("step3")],
             tasks=[step3_task],
             process=Process.sequential,
             verbose=True,
