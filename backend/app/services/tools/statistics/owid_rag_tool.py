@@ -171,12 +171,12 @@ class OWIDRAGTool(BaseTool):
                 if value is not None and str(value).strip():
                     # 중첩된 객체 처리
                     if isinstance(value, dict):
-                        result_lines.append(f"  📋 {key}:")
+                        result_lines.append(f"  - {key}:")
                         for sub_key, sub_value in value.items():
                             if sub_value is not None:
                                 result_lines.append(f"    {sub_key}: {sub_value}")
                     else:
-                        result_lines.append(f"  📋 {key}: {value}")
+                        result_lines.append(f"  - {key}: {value}")
             
             # 콘텐츠 전체를 있는 그대로 표시
             content = result.get('content', '')

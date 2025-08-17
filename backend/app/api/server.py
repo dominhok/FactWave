@@ -4,6 +4,20 @@ FactWave FastAPI Backend Server
 """
 
 import os
+import sys
+
+# UTF-8 인코딩 강제 설정
+if os.name == 'nt':  # Windows
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
+    # Windows 콘솔에서 유니코드 지원
+    import locale
+    try:
+        locale.setlocale(locale.LC_ALL, 'ko_KR.UTF-8')
+    except:
+        try:
+            locale.setlocale(locale.LC_ALL, 'Korean_Korea.65001')
+        except:
+            pass
 import json
 import asyncio
 import logging

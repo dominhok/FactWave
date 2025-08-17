@@ -189,9 +189,8 @@ class StreamingFactWaveCrew:
                         if step_info:
                             step_key, step_name = step_info
                             
-                            # Task 완료 즉시 전송 (이벤트 기반)
                             await self._handle_task_event({
-                                "type": "task_status",
+                                "type": "task_status", 
                                 "step": step_key,
                                 "agent": agent_name,
                                 "status": "completed",
