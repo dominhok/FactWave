@@ -97,7 +97,9 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
       wsRef.current.close()
     }
 
-    const ws = new WebSocket(`ws://localhost:8000/ws/${sessionId}`)
+    // WebSocket URL 설정 (환경변수 또는 기본값 사용)
+    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8000'
+    const ws = new WebSocket(`${wsUrl}/ws/${sessionId}`)
     wsRef.current = ws
     sessionIdRef.current = sessionId
     setConnectionStatus('connecting')
