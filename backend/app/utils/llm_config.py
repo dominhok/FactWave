@@ -55,25 +55,27 @@ def get_step1_llm() -> LLM:
     return LLM(
         model="gpt-4.1-mini",
         temperature=0.1,
-        max_tokens=2000  # 도구 호출을 위해 토큰 증가
+        max_tokens=3000  # 도구 호출을 위해 토큰 증가
     )
 
 
 def get_step2_llm() -> LLM:
-    """LLM for Step 2 debate with structured output"""
-    from ..models.responses import Step2Debate
-    return StructuredLLM.create_structured_llm(
-        response_model=Step2Debate,
-        temperature=0.2
+    """LLM for Step 2 debate - prompt-based JSON"""
+    # Structured output 제거, 프롬프트로 JSON 유도
+    return LLM(
+        model="gpt-4.1-mini",
+        temperature=0.2,
+        max_tokens=1500
     )
 
 
 def get_step3_llm() -> LLM:
-    """LLM for Step 3 synthesis with structured output"""
-    from ..models.responses import Step3Synthesis
-    return StructuredLLM.create_structured_llm(
-        response_model=Step3Synthesis,
-        temperature=0.1
+    """LLM for Step 3 synthesis - prompt-based JSON"""
+    # Structured output 제거, 프롬프트로 JSON 유도
+    return LLM(
+        model="gpt-4.1-mini",
+        temperature=0.1,
+        max_tokens=2000
     )
 
 
