@@ -1,4 +1,4 @@
-"""전체 도구 테스트 - 모든 11개 도구 검증"""
+"""전체 도구 테스트 - 모든 도구 검증"""
 
 import os
 import sys
@@ -17,6 +17,14 @@ from app.services.tools import (
     GoogleFactCheckTool,
     TwitterTool
 )
+
+# TavilySearchTool은 별도 패키지
+try:
+    from crewai_tools.tools.tavily_search_tool.tavily_search_tool import TavilySearchTool
+    TAVILY_AVAILABLE = True
+except ImportError:
+    TAVILY_AVAILABLE = False
+    print("⚠️ TavilySearchTool not available (crewai-tools 패키지 필요)")
 
 
 def test_tool(tool_class, tool_name, params):
@@ -50,6 +58,45 @@ def test_tool(tool_class, tool_name, params):
         return False
 
 
+def test_tavily_tool():
+    """Tavily 도구 테스트"""
+    print(f"\n{'='*60}")
+    print(f"🔧 Tavily 웹 검색")
+    print('='*60)
+    
+    try:
+        # Tavily는 초기화 시 파라미터 필요
+        tool = TavilySearchTool(
+            topic="general",
+            search_depth="basic", 
+            max_results=5
+        )
+        
+        # run 메서드 호출 (not _run)
+        result = tool.run(query="한국 경제 성장률")
+        
+        # 결과 분석
+        char_count = len(str(result))
+        has_data = any(char.isdigit() for char in str(result))
+        
+        print(f"✅ 성공 - {char_count:,}자")
+        print(f"🔢 데이터: {'있음' if has_data else '없음'}")
+        
+        # 미리보기 (처음 300자)
+        preview = str(result)[:300] + "..." if len(str(result)) > 300 else str(result)
+        print(f"\n📄 출력:")
+        print(preview)
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ 실패: {str(e)}")
+        # API 키 확인
+        if "TAVILY_API_KEY" not in os.environ:
+            print("   💡 TAVILY_API_KEY가 설정되지 않았습니다")
+        return False
+
+
 def main():
     """모든 도구 테스트"""
     
@@ -75,6 +122,11 @@ def main():
         (GoogleFactCheckTool, "Google 팩트체크", {"query": "climate change", "languageCode": "en"})
     ]
     
+    # Tavily 검색 도구 (모든 에이전트가 사용하는 핵심 도구)
+    if TAVILY_AVAILABLE:
+        # Tavily는 초기화 방식이 다름
+        tests.insert(0, (None, "Tavily 웹 검색", "tavily_special"))
+    
     # 커뮤니티 도구
     tests.append((TwitterTool, "Twitter/X", {"query": "Korea", "limit": 3}))
     
@@ -95,6 +147,8 @@ def main():
     
     # 카테고리별 분석
     print(f"\n📈 카테고리별:")
+    if TAVILY_AVAILABLE:
+        print(f"  핵심 도구: 1개 (Tavily 웹 검색)")
     print(f"  통계 도구: 4개 (KOSIS, FRED, WorldBank, OWID)")
     print(f"  학술 도구: 3개 (ArXiv, OpenAlex, Wikipedia)")  
     print(f"  뉴스 도구: 3개 (Naver, NewsAPI, GoogleFC)")

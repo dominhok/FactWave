@@ -35,6 +35,20 @@ class PromptLoader:
         """에이전트 가중치 반환"""
         return self.prompts.get('agent_weights', {})
     
+    def get_agent_config(self, agent_name: str) -> Dict[str, str]:
+        """특정 에이전트의 설정 반환
+        
+        Args:
+            agent_name: 에이전트 이름 (academic, news, logic, social, statistics, super)
+        
+        Returns:
+            에이전트 설정 딕셔너리 (role, goal, backstory)
+        """
+        agents = self.prompts.get('agents', {})
+        if agent_name not in agents:
+            raise KeyError(f"Agent '{agent_name}' not found in prompts.yaml")
+        return agents[agent_name]
+    
     def get_step1_prompt(self, agent_type: str, statement: str, role: str = None, agent_name: str = None) -> str:
         """Step 1 프롬프트 생성
         

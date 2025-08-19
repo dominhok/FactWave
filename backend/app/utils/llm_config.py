@@ -2,76 +2,64 @@
 
 from typing import Type, Optional, Dict, Any
 from pydantic import BaseModel
-from langchain_openai import ChatOpenAI
+from crewai import LLM
 import os
 import json
 
 
 class StructuredLLM:
-    """Wrapper for LLM with structured output support"""
+    """CrewAI LLM with structured output support"""
     
     @staticmethod
     def create_structured_llm(
         response_model: Optional[Type[BaseModel]] = None,
         temperature: float = 0.1,
         max_tokens: Optional[int] = None
-    ) -> ChatOpenAI:
-        """Create Upstage LLM with structured output support
+    ) -> LLM:
+        """Create OpenAI GPT-4.1-mini with structured output support
         
         Args:
             response_model: Pydantic model for structured response
             temperature: LLM temperature 
             max_tokens: Maximum tokens
+        
+        Returns:
+            Configured LLM instance
         """
-        # Base configuration for Upstage Solar API
+        # Base configuration for OpenAI GPT-4.1-mini
         base_config = {
-            "model": "openai/solar-pro2",
-            "api_key": os.getenv("UPSTAGE_API_KEY"),
-            "base_url": "https://api.upstage.ai/v1/solar",
+            "model": "gpt-4.1-mini",
             "temperature": temperature,
             "max_tokens": max_tokens or 1000,
         }
         
-        # Add structured output configuration if model provided
+        # Pydantic 모델을 직접 response_format에 전달
         if response_model:
-            schema = response_model.model_json_schema()
-            
-            # Upstage API structured output format
-            base_config["extra_body"] = {
-                "response_format": {
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": response_model.__name__,
-                        "strict": True,
-                        "schema": schema
-                    }
-                }
-            }
+            base_config["response_format"] = response_model
         
-        return ChatOpenAI(**base_config)
+        return LLM(**base_config)
     
     @staticmethod
-    def get_default_llm() -> ChatOpenAI:
+    def get_default_llm() -> LLM:
         """Get default LLM without structured output"""
-        return ChatOpenAI(
-            model="openai/solar-pro2",
-            api_key=os.getenv("UPSTAGE_API_KEY"),
-            base_url="https://api.upstage.ai/v1/solar",
+        return LLM(
+            model="gpt-4.1-mini",
             temperature=0.1,
             max_tokens=1000
         )
 
 
-def get_step1_llm() -> ChatOpenAI:
-    """LLM for Step 1 analysis with structured output"""
-    from ..models.responses import Step1Analysis
-    return StructuredLLM.create_structured_llm(
-        response_model=Step1Analysis,
-        temperature=0.1
+def get_step1_llm() -> LLM:
+    """LLM for Step 1 analysis - tool calling enabled"""
+    # Structured output 제거하여 tool calling 활성화
+    return LLM(
+        model="gpt-4.1-mini",
+        temperature=0.1,
+        max_tokens=2000  # 도구 호출을 위해 토큰 증가
     )
 
 
-def get_step2_llm() -> ChatOpenAI:
+def get_step2_llm() -> LLM:
     """LLM for Step 2 debate with structured output"""
     from ..models.responses import Step2Debate
     return StructuredLLM.create_structured_llm(
@@ -80,7 +68,7 @@ def get_step2_llm() -> ChatOpenAI:
     )
 
 
-def get_step3_llm() -> ChatOpenAI:
+def get_step3_llm() -> LLM:
     """LLM for Step 3 synthesis with structured output"""
     from ..models.responses import Step3Synthesis
     return StructuredLLM.create_structured_llm(
@@ -92,4 +80,4 @@ def get_step3_llm() -> ChatOpenAI:
 # Fallback for backward compatibility
 def get_legacy_llm() -> str:
     """Legacy LLM string for existing agents"""
-    return "openai/solar-pro2"
+    return "gpt-4.1-mini"

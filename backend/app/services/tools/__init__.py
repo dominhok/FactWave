@@ -8,7 +8,6 @@ from .academic.openalex_tool import OpenAlexTool
 # 뉴스/미디어 도구
 from .news.naver_news_tool import NaverNewsTool
 from .news.newsapi_tool import NewsAPITool
-from .gdelt_tool import GDELTTool
 from .news.factcheck_google_tool import GoogleFactCheckTool
 
 # 자연어 검색 가능한 통계 도구
@@ -21,6 +20,7 @@ from .statistics.owid_rag_tool import OWIDRAGTool
 
 # 커뮤니티 도구
 from .community.twitter_tool import TwitterTool
+from .community.youtube_tool import YouTubeTool
 
 # LLM 에이전트가 직접 사용 가능한 도구만 export
 __all__ = [
@@ -32,7 +32,6 @@ __all__ = [
     # 뉴스/미디어 (자연어 검색 가능)
     "NaverNewsTool",
     "NewsAPITool",
-    "GDELTTool",
     "GoogleFactCheckTool",
     
     # 통계 데이터 (자연어 검색 가능)
@@ -43,6 +42,7 @@ __all__ = [
     
     # 커뮤니티 도구
     "TwitterTool",          # Twitter/X 커뮤니티 검색
+    "YouTubeTool",          # YouTube 영상 검색 및 댓글 분석
 ]
 
 # 제거된 도구들 (코드/ID 필요):

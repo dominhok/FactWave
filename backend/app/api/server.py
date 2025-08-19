@@ -41,10 +41,8 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# API 설정
-os.environ["OPENAI_API_KEY"] = os.getenv("UPSTAGE_API_KEY", "")
-os.environ["OPENAI_API_BASE"] = "https://api.upstage.ai/v1"
-os.environ["OPENAI_MODEL_NAME"] = "solar-pro2"
+# API 설정 - OpenAI GPT-4.1-mini 사용
+# OPENAI_API_KEY는 .env에서 직접 로드됨
 
 
 # ==================== 데이터 모델 ====================

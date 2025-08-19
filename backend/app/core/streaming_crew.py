@@ -109,7 +109,6 @@ class StreamingFactWaveCrew:
                     # 분석 결과 추출
                     analysis = self._extract_full_answer(output) if output else "완료"
                     verdict = self._extract_verdict(output) if output else "분석중"
-                    confidence = self._extract_confidence(output) if output else 0.5
                     
                     await self.ws_manager.emit({
                         "type": "task_completed",
@@ -119,7 +118,6 @@ class StreamingFactWaveCrew:
                             "message": f"{self.fact_crew.agents[agent].role} 작업 완료",
                             "analysis": analysis,  # 전체 JSON 응답 전송
                             "verdict": verdict,
-                            "confidence": confidence,
                             "role": self.fact_crew.agents[agent].role
                         }
                     })
@@ -224,8 +222,7 @@ class StreamingFactWaveCrew:
                                     agent_name,
                                     {
                                         "analysis": self._extract_full_answer(answer_content),
-                                        "verdict": self._extract_verdict(answer_content),
-                                        "confidence": self._extract_confidence(answer_content)
+                                        "verdict": self._extract_verdict(answer_content)
                                     },
                                     step_key
                                 )
@@ -440,15 +437,6 @@ class StreamingFactWaveCrew:
                 return verdict
         return "분석중"
     
-    def _extract_confidence(self, output_str: str) -> float:
-        """신뢰도 추출"""
-        confidence_match = re.search(r'신뢰도[:\s]*([0-9.]+)', output_str)
-        if confidence_match:
-            try:
-                return float(confidence_match.group(1)) / 100.0
-            except:
-                pass
-        return 0.75  # 기본값
     
     def _structure_final_result(self, statement: str, crew_result: Any) -> Dict[str, Any]:
         """최종 결과 구조화"""
@@ -457,7 +445,6 @@ class StreamingFactWaveCrew:
         return {
             "statement": statement,
             "final_verdict": self._extract_verdict(result_str),
-            "confidence": self._calculate_weighted_confidence(),
             "verdict_korean": self.VERDICT_OPTIONS.get(self._extract_verdict(result_str), "분석 완료"),
             "summary": result_str,  # 전체 응답 포함
             "agent_verdicts": self._get_agent_verdicts(),
@@ -474,8 +461,7 @@ class StreamingFactWaveCrew:
             if agent_key in self.fact_crew.agent_outputs:
                 output = self.fact_crew.agent_outputs[agent_key]
                 verdicts[agent_name] = {
-                    "verdict": self._extract_verdict(output),
-                    "confidence": self._extract_confidence(output)
+                    "verdict": self._extract_verdict(output)
                 }
         return verdicts
     
@@ -502,20 +488,6 @@ class StreamingFactWaveCrew:
         
         return stats
     
-    def _calculate_weighted_confidence(self) -> float:
-        """가중치를 적용한 신뢰도 계산"""
-        total_confidence = 0.0
-        total_weight = 0.0
-        
-        for agent_name, weight in self.AGENT_WEIGHTS.items():
-            agent_key = f"{agent_name}_step1"
-            if agent_key in self.fact_crew.agent_outputs:
-                agent_output = self.fact_crew.agent_outputs[agent_key]
-                agent_confidence = self._extract_confidence(agent_output)
-                total_confidence += agent_confidence * weight
-                total_weight += weight
-        
-        return round(total_confidence / total_weight if total_weight > 0 else 0.75, 2)
     
     async def check_fact_async(self, statement: str) -> Dict[str, Any]:
         """비동기 팩트체킹 실행 (WebSocket 스트리밍 지원)"""
@@ -546,7 +518,7 @@ class StreamingFactWaveCrew:
             # 최종 결과 전송
             await self.streaming_callback.on_final_result(
                 final_result["final_verdict"],
-                final_result["confidence"],
+                None,  # confidence 제거
                 final_result
             )
             

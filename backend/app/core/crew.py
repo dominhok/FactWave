@@ -10,6 +10,7 @@ import time
 
 from ..agents import AcademicAgent, NewsAgent, SocialAgent, LogicAgent, StatisticsAgent, SuperAgent
 from ..utils.prompt_loader import PromptLoader
+from ..models.responses import Step1Analysis, Step2Debate, Step3Synthesis
 
 
 console = Console()
@@ -95,6 +96,7 @@ class FactWaveCrew:
                     agent=agent_instance.get_agent("step1"),
                     expected_output="판정, 근거, 신뢰도를 포함한 구조화된 분석",
                     callback=task_callback_func  # callback 필드 사용
+                    # output_json 제거하여 tool calling 활성화
                 )
                 tasks.append(task)
                 self.step1_tasks[agent_name] = task
@@ -148,7 +150,8 @@ class FactWaveCrew:
                     agent=agent_instance.get_agent("step2"),
                     expected_output="다른 에이전트의 의견을 고려한 개선된 분석",
                     context=context_tasks,  # 다른 에이전트들의 Step 1 결과를 참조
-                    callback=task_callback_func  # callback 필드 사용
+                    callback=task_callback_func,  # callback 필드 사용
+                    # output_json 제거 (Step2는 도구 사용 안 함)
                 )
                 tasks.append(task)
                 self.step2_tasks[agent_name] = task
@@ -199,7 +202,8 @@ class FactWaveCrew:
             agent=self.agents["super"].get_agent("step3"),
             expected_output="신뢰도 매트릭스와 함께 종합적인 팩트체크 판정",
             context=all_context_tasks,  # 모든 이전 단계의 결과를 참조
-            callback=task_callback_func  # callback 필드 사용
+            callback=task_callback_func,  # callback 필드 사용
+            # output_json 제거 (Step3는 도구 사용 안 함)
         )
         
         # Task 시작 알림

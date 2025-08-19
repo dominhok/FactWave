@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     # Core framework
-    "crewai",
+    "crewai[tools]",
     "crewai-tools",
     "pydantic",
     "python-dotenv",
@@ -30,6 +30,8 @@ dependencies = [
     # Academic tools
     "arxiv",
     "wikipedia-api",
+    # YouTube API
+    "google-api-python-client>=2.0.0",
     # Statistical tools
     "PublicDataReader",
     # OWID RAG system & ML
@@ -80,6 +82,7 @@ dependencies = [
     "twscrape>=0.17.0",
     "websockets>=15.0.1",
     "python-multipart>=0.0.20",
+    "tavily-python>=0.7.11",
 ]
 
 [project.optional-dependencies]
