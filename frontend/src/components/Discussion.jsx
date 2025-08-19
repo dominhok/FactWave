@@ -91,6 +91,84 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
     }
   }, [context])
 
+  // 컨텍스트 메뉴에서 선택된 텍스트 처리를 위한 상태
+  const [pendingFactCheck, setPendingFactCheck] = useState(null)
+
+  // 컨텍스트 메뉴에서 선택된 텍스트 처리
+  useEffect(() => {
+    console.log('[Discussion] Component mounted, checking for Chrome Extension API...')
+    
+    // Chrome Extension API 체크
+    if (typeof chrome !== 'undefined' && chrome.runtime) {
+      console.log('[Discussion] Chrome API available, checking for pending fact check...')
+      
+      // 컴포넌트 마운트 시 pending fact check 확인
+      const checkPendingFactCheck = () => {
+        try {
+          chrome.runtime.sendMessage({ type: 'GET_PENDING_FACT_CHECK' }, (response) => {
+            if (chrome.runtime.lastError) {
+              console.log('[Discussion] Chrome runtime error:', chrome.runtime.lastError)
+              return
+            }
+            console.log('[Discussion] Response from background:', response)
+            if (response && response.text) {
+              console.log('[Discussion] Found pending fact check text:', response.text)
+              setPendingFactCheck(response.text)
+            } else {
+              console.log('[Discussion] No pending fact check found')
+            }
+          })
+        } catch (error) {
+          console.log('[Discussion] Failed to check pending fact check:', error)
+        }
+      }
+
+      // 즉시 확인
+      checkPendingFactCheck()
+      
+      // 1초 후에도 한 번 더 확인 (타이밍 이슈 대응)
+      setTimeout(checkPendingFactCheck, 1000)
+
+      // 메시지 리스너 추가
+      const messageListener = (request, sender, sendResponse) => {
+        console.log('[Discussion] Received message:', request)
+        if (request.type === 'FACT_CHECK_REQUEST' && request.text) {
+          console.log('[Discussion] Processing FACT_CHECK_REQUEST with text:', request.text)
+          setPendingFactCheck(request.text)
+          sendResponse({ received: true })
+        }
+      }
+
+      chrome.runtime.onMessage.addListener(messageListener)
+      console.log('[Discussion] Message listener added')
+
+      // Cleanup
+      return () => {
+        if (chrome.runtime.onMessage.hasListener(messageListener)) {
+          chrome.runtime.onMessage.removeListener(messageListener)
+          console.log('[Discussion] Message listener removed')
+        }
+      }
+    } else {
+      console.log('[Discussion] Chrome API not available')
+    }
+  }, [])
+
+  // pendingFactCheck가 설정되면 자동으로 팩트체크 시작
+  useEffect(() => {
+    console.log('[Discussion] pendingFactCheck changed:', pendingFactCheck, 'hasStarted:', hasStarted)
+    if (pendingFactCheck && !hasStarted) {
+      console.log('[Discussion] Auto-starting fact check with text:', pendingFactCheck)
+      setInput(pendingFactCheck)
+      // 약간의 지연 후 제출
+      setTimeout(() => {
+        console.log('[Discussion] Submitting fact check...')
+        handleSubmit(pendingFactCheck)
+        setPendingFactCheck(null) // 처리 후 초기화
+      }, 500)
+    }
+  }, [pendingFactCheck, hasStarted])
+
   // WebSocket 연결 함수
   const connectWebSocket = (sessionId) => {
     if (wsRef.current) {
@@ -835,11 +913,18 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
     }
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    if (!input.trim()) return
+  const handleSubmit = (eOrText) => {
+    // 문자열이 직접 전달된 경우 (컨텍스트 메뉴에서 호출)
+    let question
+    if (typeof eOrText === 'string') {
+      question = eOrText
+    } else {
+      // 이벤트 객체인 경우 (폼 제출)
+      eOrText.preventDefault()
+      if (!input.trim()) return
+      question = input.trim()
+    }
 
-    const question = input.trim()
     setCurrentQuestion(question) // 현재 질문 저장
     setInput('')
     setIsLoading(true)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+dk#!/usr/bin/env python3
 """
 FactWave API Server Runner
 실행: python run_server.py 또는 uv run python run_server.py
