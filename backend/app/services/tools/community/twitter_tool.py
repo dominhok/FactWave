@@ -22,7 +22,7 @@ except ImportError:
 class TwitterSearchInput(BaseModel):
     """Twitter/X 검색 입력 스키마"""
     query: str = Field(..., description="검색 키워드 또는 해시태그")
-    limit: Optional[int] = Field(30, description="검색 결과 수 (최대 100)")
+    limit: Optional[int] = Field(10, description="검색 결과 수 (최대 100)")
     language: Optional[str] = Field("ko", description="언어 코드 (ko, en, ja 등)")
     include_replies: Optional[bool] = Field(False, description="답글 포함 여부")
 
@@ -52,9 +52,27 @@ class TwitterTool(BaseTool):
         try:
             # accounts.db가 이미 설정되어 있으면 그대로 사용
             self._api = API()  # 기본적으로 accounts.db 파일 사용
-            console.print("[green]Twitter API 초기화 완료 (accounts.db 사용)[/green]")
+            
+            # 계정 상태 확인 (비동기 함수를 동기적으로 실행)
+            accounts_info = asyncio.run(self._check_accounts())
+            active_count = sum(1 for acc in accounts_info if acc.get('active', False))
+            
+            console.print(f"[green]Twitter API 초기화 완료 (accounts.db 사용)[/green]")
+            console.print(f"[cyan]활성 계정 수: {active_count}개[/cyan]")
+            
+            if active_count == 0:
+                console.print("[yellow]⚠️ 활성 계정이 없습니다. manage_twitter_accounts.py를 실행하여 계정을 추가하세요.[/yellow]")
         except Exception as e:
             console.print(f"[red]Twitter API 초기화 오류: {str(e)}[/red]")
+    
+    async def _check_accounts(self) -> List:
+        """계정 상태 확인"""
+        try:
+            # 계정 정보 가져오기
+            accounts = await self._api.pool.accounts_info()
+            return accounts
+        except:
+            return []
     
     def _run(
         self,
@@ -74,14 +92,21 @@ class TwitterTool(BaseTool):
         try:
             # 동기적으로 비동기 함수 실행
             tweets = asyncio.run(self._search_tweets(query, limit, language, include_replies))
+            
+            # 트윗이 없으면 대체 데이터 제공
+            if not tweets:
+                console.print(f"[yellow]Twitter에서 실시간 데이터를 가져올 수 없어 대체 데이터를 제공합니다[/yellow]")
+                return self._get_fallback_data(query)
+            
             return self._format_twitter_data(tweets, query)
             
         except Exception as e:
-            console.print(f"[red]Twitter 검색 오류: {str(e)}[/red]")
-            return self._get_mock_data(query)
+            # 에러 발생 시에도 팩트체킹은 계속 진행
+            console.print(f"[yellow]Twitter 도구 오류 발생. 대체 데이터로 계속 진행합니다.[/yellow]")
+            return self._get_fallback_data(query)
     
     async def _search_tweets(self, query: str, limit: int, language: str, include_replies: bool) -> List:
-        """비동기 트윗 검색"""
+        """비동기 트윗 검색 - 자동 계정 전환 지원"""
         tweets = []
         
         # 언어 필터 추가
@@ -89,11 +114,38 @@ class TwitterTool(BaseTool):
         if not include_replies:
             search_query += " -filter:replies"
         
-        # 검색 수행
-        async for tweet in self._api.search(search_query, limit=min(limit, 100)):
-            tweets.append(tweet)
-            if len(tweets) >= limit:
-                break
+        try:
+            # 타임아웃 설정 (10초)
+            import asyncio
+            
+            # 검색 작업을 별도 코루틴으로 만들기
+            async def search_with_limit():
+                async for tweet in self._api.search(search_query, limit=min(limit, 100)):
+                    tweets.append(tweet)
+                    if len(tweets) >= limit:
+                        break
+                return tweets
+            
+            # wait_for를 사용한 타임아웃 처리
+            tweets = await asyncio.wait_for(search_with_limit(), timeout=10.0)
+                        
+        except asyncio.TimeoutError:
+            # 타임아웃 발생 시 수집된 트윗만 반환
+            console.print(f"[yellow]⏱️ Twitter 검색 타임아웃 (10초). {len(tweets)}개 트윗만 수집됨[/yellow]")
+            
+        except Exception as e:
+            error_msg = str(e)
+            
+            # Rate limit 또는 세션 만료 에러 처리
+            if "No account available" in error_msg or "Session expired" in error_msg or "403" in error_msg:
+                console.print(f"[yellow]⚠️ Twitter API 제한: 모든 계정이 일시적으로 사용 불가[/yellow]")
+                console.print(f"[yellow]   다음 재시도 가능 시간을 확인하거나 새 계정을 추가하세요[/yellow]")
+                # 에러를 발생시키지 않고 빈 리스트 반환
+                return []
+            else:
+                # 기타 에러는 로그만 남기고 빈 리스트 반환
+                console.print(f"[yellow]Twitter 검색 오류: {error_msg[:100]}[/yellow]")
+                return []
         
         return tweets
     
@@ -215,6 +267,29 @@ class TwitterTool(BaseTool):
 - Twitter/X의 스크래핑 정책 변경으로 계정이 제한될 수 있음
 - 여러 계정 사용으로 리스크 분산 권장
 - 과도한 요청 자제"""
+    
+    def _get_fallback_data(self, query: str) -> str:
+        """Twitter API 사용 불가 시 제공할 대체 데이터"""
+        return f"""🐦 Twitter/X 검색: '{query}'
+📊 소셜 미디어 분석 (대체 데이터)
+
+⚠️ **실시간 Twitter 데이터 접근 제한**
+현재 Twitter API 제한으로 인해 실시간 데이터를 가져올 수 없습니다.
+대신 일반적인 소셜 미디어 트렌드 정보를 제공합니다.
+
+📈 **일반적인 소셜 미디어 반응 패턴**:
+• 주요 이슈는 보통 1-2시간 내 급속히 확산
+• 논란성 주제는 높은 참여율 (리트윗/답글 증가)
+• 팩트체크 요청이 많은 주제일수록 잘못된 정보 가능성 존재
+
+💡 **권장 사항**:
+• 다른 검증 도구들의 결과를 우선 참고하세요
+• 공식 뉴스 매체와 학술 자료를 중심으로 판단하세요
+• 소셜 미디어 여론은 편향될 수 있음을 고려하세요
+
+🔍 **추가 확인 필요**:
+이 주제에 대한 소셜 미디어 여론은 별도로 확인이 필요합니다.
+다른 에이전트들의 분석 결과를 종합하여 판단하시기 바랍니다."""
     
     def _get_mock_data(self, query: str) -> str:
         """API 설정이 없을 때 반환할 메시지"""

@@ -35,9 +35,14 @@ from dotenv import load_dotenv
 # 프로젝트 imports
 from app.core.streaming_crew import StreamingFactWaveCrew
 from app.utils.websocket_manager import WebSocketManager
+from app.services.tools.verification.ai_image_detector import AIImageDetectorTool
+from app.services.tools.verification.youtube_video_analyzer import YouTubeVideoAnalyzer
 
-# 환경 설정
-load_dotenv()
+# 환경 설정 - 루트 디렉토리의 .env 파일 로드
+import pathlib
+root_dir = pathlib.Path(__file__).parent.parent.parent.parent  # backend/app/api/server.py -> 루트
+env_path = root_dir / ".env"
+load_dotenv(env_path)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -228,6 +233,119 @@ async def get_active_sessions():
     }
 
 
+@app.post("/api/analyze-image")
+async def analyze_image(request: dict):
+    """
+    이미지 AI 탐지 REST API 엔드포인트
+    
+    Request body:
+    {
+        "url": "이미지 URL 또는 data:image base64"
+    }
+    """
+    import base64
+    import requests
+    import re
+    
+    image_url = request.get("url")
+    
+    if not image_url:
+        raise HTTPException(status_code=400, detail="이미지 URL이 필요합니다")
+    
+    # Base64 이미지 처리
+    if image_url.startswith("data:image"):
+        logger.info("[REST API] Base64 이미지 감지, 임시 URL 생성 시도")
+        
+        try:
+            # Base64 데이터 추출
+            base64_match = re.match(r'data:image/(\w+);base64,(.+)', image_url)
+            if not base64_match:
+                raise HTTPException(status_code=400, detail="잘못된 Base64 이미지 형식")
+            
+            image_format = base64_match.group(1)
+            base64_data = base64_match.group(2)
+            
+            # ImgBB API를 사용하여 이미지 업로드 (무료 플랜)
+            # 주의: 실제 사용시 API 키를 .env에 추가해야 함
+            imgbb_api_key = os.getenv("IMGBB_API_KEY", "YOUR_IMGBB_API_KEY")
+            
+            if imgbb_api_key == "YOUR_IMGBB_API_KEY":
+                # API 키가 없으면 Base64를 직접 분석할 수 없음을 알림
+                return {
+                    "status": "error",
+                    "message": "Base64 이미지는 현재 지원되지 않습니다. 웹 URL 이미지를 사용해주세요.",
+                    "help": "이미지를 imgur.com 등에 업로드 후 URL을 사용하거나, ImgBB API 키를 설정하세요."
+                }
+            
+            # ImgBB에 업로드
+            imgbb_response = requests.post(
+                "https://api.imgbb.com/1/upload",
+                data={
+                    "key": imgbb_api_key,
+                    "image": base64_data,
+                    "expiration": 600  # 10분 후 자동 삭제
+                }
+            )
+            
+            if imgbb_response.status_code == 200:
+                imgbb_data = imgbb_response.json()
+                if imgbb_data.get("success"):
+                    image_url = imgbb_data["data"]["url"]
+                    logger.info(f"[REST API] ImgBB 업로드 성공: {image_url}")
+                else:
+                    raise HTTPException(status_code=500, detail="이미지 업로드 실패")
+            else:
+                raise HTTPException(status_code=500, detail=f"ImgBB API 오류: {imgbb_response.status_code}")
+                
+        except Exception as e:
+            logger.error(f"[REST API] Base64 처리 오류: {str(e)}")
+            return {
+                "status": "error",
+                "message": f"Base64 이미지 처리 실패: {str(e)}",
+                "help": "이미지를 웹에 업로드 후 URL을 사용해주세요."
+            }
+    
+    logger.info(f"[REST API] 이미지 분석 요청: {image_url[:100]}...")
+    
+    try:
+        # AI 이미지 탐지 도구 사용
+        detector = AIImageDetectorTool()
+        
+        # 직접 API 호출하여 구조화된 데이터 받기
+        api_result = detector._detect_with_api(image_url)
+        
+        if api_result.get('error'):
+            return {
+                "status": "error",
+                "message": api_result.get('error'),
+                "url": image_url,
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        # 구조화된 데이터 반환
+        ai_score = api_result.get('ai_score', 0)
+        confidence = api_result.get('confidence', 0)
+        
+        return {
+            "status": "success",
+            "url": image_url,
+            "analysis": {
+                "ai_score": ai_score,
+                "human_score": 100 - ai_score,
+                "confidence": confidence,
+                "is_ai_generated": ai_score >= 50,
+                "verdict": "AI Generated" if ai_score >= 50 else "Real Photo",
+                "verdict_kr": "AI 생성 이미지" if ai_score >= 50 else "실제 사진",
+                "risk_level": "high" if ai_score >= 80 else "medium" if ai_score >= 50 else "low"
+            },
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"[REST API] 이미지 분석 오류: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"이미지 분석 중 오류: {str(e)}")
+
+
 @app.delete("/api/sessions/{session_id}")
 async def close_session(session_id: str):
     """세션 종료"""
@@ -312,6 +430,178 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
                     await manager.send_message(session_id, WebSocketMessage(
                         type="error",
                         content={"error": str(e), "details": "팩트체킹 중 오류가 발생했습니다."}
+                    ))
+            
+            elif action == "analyze_youtube":
+                # YouTube 영상 분석
+                youtube_url = data.get("url")
+                
+                if not youtube_url:
+                    await manager.send_message(session_id, WebSocketMessage(
+                        type="error",
+                        content={"error": "YouTube URL이 제공되지 않았습니다."}
+                    ))
+                    continue
+                
+                try:
+                    # YouTube 분석기 초기화
+                    analyzer = YouTubeVideoAnalyzer()
+                    
+                    # 영상 분석 시작 알림
+                    await manager.send_message(session_id, WebSocketMessage(
+                        type="youtube_analysis_started",
+                        content={
+                            "url": youtube_url,
+                            "message": "YouTube 영상을 분석 중입니다..."
+                        }
+                    ))
+                    
+                    # 팩트체킹용 주장 추출
+                    result = await analyzer.extract_claims_for_factcheck(youtube_url)
+                    
+                    if result["status"] == "skip":
+                        # 팩트체킹이 필요 없는 콘텐츠
+                        await manager.send_message(session_id, WebSocketMessage(
+                            type="youtube_analysis_complete",
+                            content={
+                                "url": youtube_url,
+                                "content_type": result.get("content_type", "unknown"),
+                                "purpose": result.get("purpose", "unknown"),
+                                "message": result.get("message", ""),
+                                "analysis": result.get("content", ""),
+                                "needs_factcheck": False
+                            }
+                        ))
+                        logger.info(f"YouTube 영상 팩트체킹 불필요: {result.get('content_type')}")
+                        
+                    elif result["status"] == "success":
+                        # 분석 결과 전송
+                        await manager.send_message(session_id, WebSocketMessage(
+                            type="youtube_analysis_complete",
+                            content={
+                                "url": youtube_url,
+                                "analysis": result["content"],
+                                "claims": result.get("extracted_claims", []),
+                                "claims_count": result.get("claims_count", 0)
+                            }
+                        ))
+                        
+                        # 팩트체킹할 문장이 있으면 자동으로 팩트체킹 시작
+                        if result.get("factcheck_statement"):
+                            # 팩트체킹 시작 메시지
+                            await manager.send_message(session_id, WebSocketMessage(
+                                type="fact_check_started",
+                                content={
+                                    "statement": result["factcheck_statement"],
+                                    "source": "youtube_video",
+                                    "video_url": youtube_url,
+                                    "timestamp": datetime.now().isoformat()
+                                }
+                            ))
+                            
+                            # 팩트체커 가져오기
+                            fact_checker = manager.get_or_create_checker(session_id)
+                            
+                            # 비동기로 팩트체킹 실행
+                            try:
+                                # 팩트체킹 실행
+                                fact_result = await asyncio.create_task(
+                                    fact_checker.check_fact_async(result["factcheck_statement"])
+                                )
+                                
+                                # 최종 결과 전송
+                                await manager.send_message(session_id, WebSocketMessage(
+                                    type="final_result",
+                                    content={
+                                        **fact_result,
+                                        "source": "youtube_video",
+                                        "video_url": youtube_url
+                                    },
+                                    metadata={"completed_at": datetime.now().isoformat()}
+                                ))
+                                
+                            except Exception as e:
+                                logger.error(f"YouTube fact-checking error: {e}")
+                                await manager.send_message(session_id, WebSocketMessage(
+                                    type="error",
+                                    content={"error": str(e), "details": "YouTube 영상 팩트체킹 중 오류가 발생했습니다."}
+                                ))
+                    else:
+                        # 분석 실패
+                        await manager.send_message(session_id, WebSocketMessage(
+                            type="error",
+                            content={
+                                "error": result.get("error", "영상 분석 실패"),
+                                "details": "YouTube 영상을 분석할 수 없습니다."
+                            }
+                        ))
+                        
+                except Exception as e:
+                    logger.error(f"YouTube analysis error: {e}")
+                    await manager.send_message(session_id, WebSocketMessage(
+                        type="error",
+                        content={"error": str(e), "details": "YouTube 영상 분석 중 오류가 발생했습니다."}
+                    ))
+            
+            elif action == "analyze_image":
+                # AI 이미지 분석
+                image_url = data.get("url")  # URL 직접 전달
+                image_data = data.get("image")  # Base64 데이터
+                filename = data.get("filename", "unknown.jpg")
+                
+                # URL이 있으면 직접 분석
+                if image_url:
+                    try:
+                        # AI 이미지 탐지 도구 사용
+                        detector = AIImageDetectorTool()
+                        result = detector._run(image_url=image_url, confidence_threshold=0.5)
+                        
+                        # 결과 전송
+                        await manager.send_message(session_id, WebSocketMessage(
+                            type="image_analysis_result",
+                            content={
+                                "url": image_url,
+                                "result": result
+                            }
+                        ))
+                        
+                    except Exception as e:
+                        logger.error(f"Image URL analysis error: {e}")
+                        await manager.send_message(session_id, WebSocketMessage(
+                            type="error",
+                            content={"error": str(e), "details": "이미지 URL 분석 중 오류가 발생했습니다."}
+                        ))
+                
+                # Base64 데이터 처리 (현재는 안내 메시지)
+                elif image_data:
+                    result_message = f"""🔍 AI 이미지 분석 결과
+
+파일명: {filename}
+
+⚠️ 현재 이미지 분석을 위해서는 이미지가 웹에서 접근 가능한 URL이 필요합니다.
+
+사용 방법:
+1. 이미지를 온라인에 업로드 (imgur, imgbb 등)
+2. 이미지 URL을 채팅에 입력
+3. 팩트체크 시작
+
+예: "이 이미지가 AI로 생성된 것인지 확인해주세요: https://example.com/image.jpg"
+
+💡 또는 웹페이지의 이미지를 우클릭하고 "FactWave: AI 이미지 탐지"를 선택하세요."""
+                    
+                    # 결과 전송
+                    await manager.send_message(session_id, WebSocketMessage(
+                        type="image_analysis_result",
+                        content={
+                            "filename": filename,
+                            "message": result_message
+                        }
+                    ))
+                
+                else:
+                    await manager.send_message(session_id, WebSocketMessage(
+                        type="error",
+                        content={"error": "No image data or URL provided"}
                     ))
             
             elif action == "ping":

@@ -65,7 +65,7 @@ def get_step2_llm() -> LLM:
     return LLM(
         model="gpt-4.1-mini",
         temperature=0.2,
-        max_tokens=1500
+        max_tokens=4000  # Step 2 토론 응답 충분히 늘림
     )
 
 
@@ -75,7 +75,7 @@ def get_step3_llm() -> LLM:
     return LLM(
         model="gpt-4.1-mini",
         temperature=0.1,
-        max_tokens=2000
+        max_tokens=4000  # Step 3 최종 보고서도 충분히 늘림
     )
 
 

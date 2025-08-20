@@ -14,6 +14,7 @@ chrome.runtime.onInstalled.addListener(() => {
     .catch((error) => console.error("Failed to set panel behavior:", error));
   
   // 컨텍스트 메뉴 생성
+  // 텍스트 선택 시 팩트체크
   chrome.contextMenus.create({
     id: "factwave-check",
     title: "FactWave에서 팩트체크하기",
@@ -25,14 +26,28 @@ chrome.runtime.onInstalled.addListener(() => {
       console.log("Context menu created successfully");
     }
   });
+  
+  // 이미지 우클릭 시 AI 분석
+  chrome.contextMenus.create({
+    id: "factwave-image-check",
+    title: "FactWave: AI 이미지 탐지",
+    contexts: ["image"]
+  }, () => {
+    if (chrome.runtime.lastError) {
+      console.error("Image context menu creation error:", chrome.runtime.lastError);
+    } else {
+      console.log("Image context menu created successfully");
+    }
+  });
 });
 
 // ========================================
 // 컨텍스트 메뉴 클릭 이벤트 처리
 // ========================================
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  console.log("Context menu clicked!", info.menuItemId, info.selectionText);
+  console.log("Context menu clicked!", info.menuItemId, info.selectionText || info.srcUrl);
   
+  // 텍스트 팩트체크
   if (info.menuItemId === "factwave-check" && info.selectionText) {
     console.log("FactWave menu selected with text:", info.selectionText);
     
@@ -67,6 +82,31 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
           console.error("Failed to open side panel:", error);
         });
     });
+  }
+  
+  // 이미지 AI 분석
+  else if (info.menuItemId === "factwave-image-check" && info.srcUrl) {
+    console.log("FactWave image analysis selected with URL:", info.srcUrl);
+    
+    // 사이드 패널 열기
+    chrome.sidePanel.open({ windowId: tab.windowId })
+      .then(() => {
+        console.log("Side panel opened for image analysis!");
+        
+        // 사이드 패널이 열린 후 메시지 전송 시도
+        setTimeout(() => {
+          console.log("Attempting to send image analysis request...");
+          chrome.runtime.sendMessage({
+            type: 'IMAGE_CHECK_REQUEST',
+            url: info.srcUrl
+          }).catch((error) => {
+            console.log("Message sending failed (expected if panel is loading):", error);
+          });
+        }, 1500);
+      })
+      .catch(error => {
+        console.error("Failed to open side panel:", error);
+      });
   }
 });
 

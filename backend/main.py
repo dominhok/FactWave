@@ -26,8 +26,10 @@ import logging
 # Project imports
 from app.core import FactWaveCrew
 
-# Setup
-load_dotenv()
+# Setup - 루트 디렉토리의 .env 파일 로드
+root_dir = Path(__file__).parent.parent  # backend/main.py -> 루트
+env_path = root_dir / ".env"
+load_dotenv(env_path)
 console = Console()
 
 # Setup logger
@@ -39,17 +41,14 @@ logger = logging.getLogger(__name__)
 
 # Configure API settings
 def setup_api():
-    """Configure API settings for Upstage Solar-pro2"""
-    api_key = os.getenv("UPSTAGE_API_KEY")
+    """Configure API settings for OpenAI"""
+    api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        console.print("[red]❌ UPSTAGE_API_KEY not found in .env file![/red]")
+        console.print("[red]❌ OPENAI_API_KEY not found in .env file![/red]")
         console.print("[yellow]Please set up your API key first.[/yellow]")
         sys.exit(1)
     
-    os.environ["OPENAI_API_KEY"] = api_key
-    os.environ["OPENAI_API_BASE"] = "https://api.upstage.ai/v1"
-    os.environ["OPENAI_MODEL_NAME"] = "solar-pro2"
-    os.environ["OPENAI_BASE_URL"] = "https://api.upstage.ai/v1"
+    os.environ["OPENAI_MODEL_NAME"] = "gpt-4.1-mini"
 
 
 class FactWaveInterface:
@@ -243,7 +242,7 @@ class FactWaveInterface:
         settings = Panel(
             """[bold]현재 구성:[/bold]
             
-• Model: Upstage Solar-pro2
+• Model: OpenAI GPT-4.1-mini
 • Agents: 5 (Academic, News, Statistics, Logic, Social)
 • Process: 3-stage verification
 • Cache: Enabled (Academic: 1hr, News: 30min, Social: 15min)
@@ -440,7 +439,7 @@ Super Agent creates a weighted confidence matrix and delivers the final verdict.
             'statement': statement,
             'result': str(result),
             'metadata': {
-                'model': 'solar-pro2',
+                'model': 'gpt-4.1-mini',
                 'agents': 5,
                 'stages': 3
             }
@@ -491,14 +490,19 @@ Super Agent creates a weighted confidence matrix and delivers the final verdict.
     def _show_env_status(self):
         """Show environment variable status"""
         env_vars = [
-            'UPSTAGE_API_KEY',
+            'OPENAI_API_KEY',
+            'GOOGLE_API_KEY',
             'NAVER_CLIENT_ID',
             'NAVER_CLIENT_SECRET',
-            'NEWSAPI_KEY',
-            'GOOGLE_FACT_CHECK_API_KEY',
+            'NEWSAPI_API_KEY',
             'FRED_API_KEY',
             'KOSIS_API_KEY',
-            'YOUTUBE_API_KEY'
+            'TAVILY_API_KEY',
+            'SIGHTENGINE_API_USER',
+            'SIGHTENGINE_API_SECRET',
+            'IMGBB_API_KEY',
+            'CLAUDE_API_KEY',
+            'ECOS_API_KEY'
         ]
         
         table = Table(title="API 구성 상태")

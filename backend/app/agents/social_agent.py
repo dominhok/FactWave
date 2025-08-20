@@ -28,6 +28,6 @@ class SocialAgent(FactWaveAgent):
                 max_results=10,
                 days=90  # 소셜 미디어는 최근 3개월
             ),
-            # YouTubeTool(),  # YouTube 영상 및 댓글 분석 (API 키 필요)
+            YouTubeTool(),  # YouTube 영상 및 댓글 분석 (GOOGLE_API_KEY 사용)
             TwitterTool()  # 소셜 미디어 분석
         ]

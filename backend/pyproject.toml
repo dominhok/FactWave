@@ -30,8 +30,9 @@ dependencies = [
     # Academic tools
     "arxiv",
     "wikipedia-api",
-    # YouTube API
+    # YouTube API & Gemini
     "google-api-python-client>=2.0.0",
+    "google-genai>=0.1.0",
     # Statistical tools
     "PublicDataReader",
     # OWID RAG system & ML
@@ -83,6 +84,9 @@ dependencies = [
     "websockets>=15.0.1",
     "python-multipart>=0.0.20",
     "tavily-python>=0.7.11",
+    "google-generativeai>=0.8.5",
+    "google>=3.0.0",
+    "google-genai>=1.31.0",
 ]
 
 [project.optional-dependencies]

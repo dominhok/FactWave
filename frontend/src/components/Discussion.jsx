@@ -1,4 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
+import ImageAnalysisResult from './ImageAnalysisResult'
+import LoadingMessage from './LoadingMessage'
+import YouTubeThumbnail from './YouTubeThumbnail'
+import { getYouTubeVideoInfo, isYouTubeUrl } from '../utils/youtube'
+import '../styles/loading.css'
 
 function Discussion({ onSaveResult, onSaveConversation, context, onClearContext }) {
   const [input, setInput] = useState('')
@@ -8,7 +13,11 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
   const [connectionStatus, setConnectionStatus] = useState('disconnected')
   const wsRef = useRef(null)
   const sessionIdRef = useRef(null)
+  const fileInputRef = useRef(null)
+  const [selectedImage, setSelectedImage] = useState(null)
   const [currentQuestion, setCurrentQuestion] = useState('')
+  const [showYouTubeInput, setShowYouTubeInput] = useState(false)
+  const [youtubeUrl, setYoutubeUrl] = useState('')
   const [agentResults, setAgentResults] = useState({})
   const [allResponses, setAllResponses] = useState([]) // 11개 모든 응답 저장
   const [responseCount, setResponseCount] = useState(0) // 응답 개수 추적
@@ -136,6 +145,15 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
           console.log('[Discussion] Processing FACT_CHECK_REQUEST with text:', request.text)
           setPendingFactCheck(request.text)
           sendResponse({ received: true })
+        } else if (request.type === 'IMAGE_CHECK_REQUEST' && request.url) {
+          console.log('[Discussion] Processing IMAGE_CHECK_REQUEST with URL:', request.url)
+          // 토론 시작 창이 표시되고 있으면 숨기기
+          if (!hasStarted) {
+            setHasStarted(true)
+          }
+          // 이미지 URL을 직접 분석
+          analyzeImageUrl(request.url)
+          sendResponse({ received: true })
         }
       }
 
@@ -194,6 +212,45 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
       try {
         const data = JSON.parse(event.data)
         console.log('[WS] 원시 메시지 수신:', data.type, data.agent, data.step)
+        
+        // YouTube 영상 분석 시작
+        if (data.type === 'youtube_analysis_started') {
+          console.log('[YouTube] 분석 시작:', data.content)
+          return
+        }
+        
+        // YouTube 영상 분석 완료
+        if (data.type === 'youtube_analysis_complete') {
+          const resultMessage = {
+            id: Date.now(),
+            type: 'youtube_result',
+            content: data.content,
+            timestamp: new Date(),
+            isAssistant: true
+          }
+          setMessages(prev => [...prev, resultMessage])
+          
+          // 팩트체킹이 필요없는 경우 로딩 종료
+          if (!data.content.needs_factcheck) {
+            setIsLoading(false)
+          }
+          return
+        }
+        
+        // 이미지 분석 결과 처리
+        if (data.type === 'image_analysis_result') {
+          const resultMessage = {
+            id: Date.now(),
+            type: 'image_result',
+            analysis: data.content.analysis,  // 구조화된 분석 데이터
+            imageUrl: data.content.url,
+            timestamp: new Date(),
+            isAssistant: true
+          }
+          setMessages(prev => [...prev, resultMessage])
+          setIsLoading(false)
+          return
+        }
         
         // 메시지를 큐에 추가
         messageQueueRef.current.push(data)
@@ -473,52 +530,101 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
             additionalPerspective: ''
           };
         }
-        // Step2: 토론 (agreements, disagreements, additional_perspective, final_verdict)
+        // Step2: 토론 (단순화된 형식 - debate_position, key_agreements, key_disagreements, additional_evidence, questions_raised)
         else if (step === 'step2') {
           // Step2는 다른 필드명을 사용하므로 특별 처리
-          const step2Data = parsedResponse || {};
+          let step2Data = parsedResponse || {};
           
-          // Step2 특별 로깅
+          // Step2 특별 로깅 및 analysis 필드 처리
           if (!parsedResponse) {
-            console.warn(`[Step2] ${agent} JSON 파싱 실패, 원본 content 사용`);
+            console.warn(`[Step2] ${agent} JSON 파싱 실패, 원본 content 확인`);
             console.log('[Step2] 원본 content:', content);
+            
+            // content.analysis에서 JSON 추출 시도
+            if (content.analysis && typeof content.analysis === 'string') {
+              try {
+                step2Data = JSON.parse(content.analysis);
+                console.log(`[Step2] ${agent} content.analysis에서 파싱 성공`);
+              } catch (e) {
+                console.warn(`[Step2] ${agent} content.analysis 파싱도 실패`);
+              }
+            }
           } else {
             console.log(`[Step2] ${agent} 파싱 성공:`, {
-              agreements: step2Data.agreements?.length || 0,
-              disagreements: step2Data.disagreements?.length || 0,
-              final_verdict: step2Data.final_verdict
+              debate_position: step2Data.debate_position,
+              key_agreements: step2Data.key_agreements
             });
           }
           
           messageData = {
             ...messageData,
-            verdict: step2Data.final_verdict || content.verdict || '정보부족',
-            keyFindings: [],
-            evidenceSources: [],
-            reasoning: step2Data.additional_perspective || content.message || '',
-            agreements: step2Data.agreements || [],
-            disagreements: step2Data.disagreements || [],
-            additionalPerspective: step2Data.additional_perspective || ''
+            // Step 2 새로운 단순화된 형식
+            debatePosition: step2Data.debate_position || '',
+            keyAgreements: step2Data.key_agreements || [],
+            keyDisagreements: step2Data.key_disagreements || [],
+            additionalEvidence: step2Data.additional_evidence || '',
+            questionsRaised: step2Data.questions_raised || '',
+            // 이전 형식 호환성 유지
+            agreements: step2Data.key_agreements || step2Data.agreements || [],
+            disagreements: step2Data.key_disagreements || step2Data.disagreements || [],
+            additionalPerspective: step2Data.debate_position || step2Data.additional_perspective || ''
           };
         }
-        // Step3: 최종 종합 (final_verdict, key_agreements, key_disagreements, verdict_reasoning, summary)
+        // Step3: 최종 종합 (새로운 형식 - confidence_level, expert_summary, key_factors, contextual_analysis)
         else if (step === 'step3' && agent === 'super') {
+          const step3Data = parsedResponse || {};
+          
           messageData = {
             ...messageData,
-            verdict: responseToUse.final_verdict || content.verdict || '정보부족',
-            keyFindings: responseToUse.key_agreements || [], // 합의점을 핵심발견으로 표시
-            evidenceSources: [],
-            reasoning: responseToUse.verdict_reasoning || responseToUse.summary || '',
-            agreements: responseToUse.key_agreements || [],
-            disagreements: responseToUse.key_disagreements || [],
-            additionalPerspective: responseToUse.summary || ''
+            verdict: step3Data.final_verdict || content.verdict || '정보부족',
+            expertSummary: step3Data.expert_summary || {},
+            consensusPoints: step3Data.consensus_points || [],
+            divergencePoints: step3Data.divergence_points || [],
+            keyFactors: step3Data.key_factors || [],
+            contextualAnalysis: step3Data.contextual_analysis || '',
+            finalReasoning: step3Data.final_reasoning || '',
+            executiveSummary: step3Data.executive_summary || '',
+            caveats: step3Data.caveats || [],
+            // 이전 형식 호환성 유지
+            keyFindings: step3Data.key_factors || step3Data.critical_findings || step3Data.key_agreements || [],
+            reasoning: step3Data.final_reasoning || step3Data.verdict_reasoning || responseToUse.summary || '',
+            agreements: step3Data.consensus_points || step3Data.consensus_areas || step3Data.key_agreements || [],
+            disagreements: step3Data.divergence_points || step3Data.dispute_areas || step3Data.key_disagreements || []
           };
         }
         
         const taskCompletedMessage = messageData
         
         console.log(`[메시지 추가] ${agent} ${step}:`, taskCompletedMessage.verdict);
-        setMessages(prev => [...prev, taskCompletedMessage])
+        
+        // 스텝별 구분선 추가 로직
+        setMessages(prev => {
+          const lastMessage = prev[prev.length - 1];
+          const needsDivider = lastMessage && 
+                              lastMessage.step && 
+                              lastMessage.step !== step && 
+                              !prev.some(msg => msg.type === 'step_divider' && msg.step === step);
+          
+          if (needsDivider) {
+            const stepNames = {
+              'step1': 'Step 1: 초기 분석',
+              'step2': 'Step 2: 전문가 토론', 
+              'step3': 'Step 3: 최종 종합'
+            };
+            
+            const dividerMessage = {
+              id: `divider_${step}_${Date.now()}`,
+              type: 'step_divider',
+              step: step,
+              stepName: stepNames[step] || step,
+              timestamp: new Date()
+            };
+            
+            return [...prev, dividerMessage, taskCompletedMessage];
+          }
+          
+          return [...prev, taskCompletedMessage];
+        })
         
         // 모든 응답을 allResponses에 저장 (라이브러리용)
         const responseData = {
@@ -827,6 +933,13 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
           console.log('현재 메시지 수:', currentMessages.length);
           console.log('저장할 질문:', currentQuestionState);
           
+          // 이미지/동영상 분석 결과 확인
+          const hasImageAnalysis = currentMessages.some(m => m.type === 'image_result');
+          const hasYouTubeAnalysis = currentMessages.some(m => m.type === 'youtube_result');
+          
+          // Step 3 메시지에서 새로운 형식 필드 추출
+          const step3Message = currentMessages.find(m => m.step === 'step3' && m.agentId === 'super');
+          
           const conversation = {
             id: Date.now(),
             question: currentQuestionState, // 최신 질문 상태 사용
@@ -835,6 +948,40 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
             totalResponses: currentResponses.length,
             responses: currentResponses, // 모든 응답
             messages: currentMessages, // UI 메시지들
+            analysisType: hasImageAnalysis ? 'image' : hasYouTubeAnalysis ? 'youtube' : 'text',
+            // Step 3의 새로운 필드들 저장
+            finalReport: step3Message ? {
+              verdict: step3Message.verdict,
+              expertSummary: step3Message.expertSummary,
+              keyFactors: step3Message.keyFactors,
+              contextualAnalysis: step3Message.contextualAnalysis,
+              executiveSummary: step3Message.executiveSummary,
+              caveats: step3Message.caveats,
+              consensusPoints: step3Message.consensusPoints,
+              divergencePoints: step3Message.divergencePoints
+            } : null,
+            // Step 2의 토론 하이라이트 (새로운 형식)
+            debateHighlights: currentMessages
+              .filter(m => m.step === 'step2')
+              .map(m => ({
+                agent: m.agentId,
+                agentName: m.agentName,
+                debatePosition: m.debatePosition,
+                keyAgreements: m.keyAgreements,
+                keyDisagreements: m.keyDisagreements,
+                additionalEvidence: m.additionalEvidence,
+                questionsRaised: m.questionsRaised,
+                // 이전 형식 호환성
+                agreements: m.agreements,
+                disagreements: m.disagreements
+              }))
+              .filter(h => h.debatePosition || h.keyAgreements?.length > 0),
+            // 이미지/동영상 정보 저장
+            mediaInfo: hasImageAnalysis ? 
+              currentMessages.find(m => m.type === 'image_result') : 
+              hasYouTubeAnalysis ? 
+              currentMessages.find(m => m.type === 'youtube_result') : 
+              null,
             summary: {
               step1: currentResponses.filter(r => r.step === 'step1').length,
               step2: currentResponses.filter(r => r.step === 'step2').length,
@@ -913,6 +1060,222 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
     }
   }
 
+  const analyzeYouTubeVideo = async (videoUrl) => {
+    // YouTube 비디오 정보 추출
+    const videoInfo = getYouTubeVideoInfo(videoUrl)
+    
+    // 사용자 메시지로 YouTube 썸네일 표시
+    const userMessage = {
+      id: Date.now(),
+      type: 'youtube_request',
+      content: '🎥 YouTube 영상 분석 요청',
+      videoInfo: videoInfo,
+      url: videoUrl,
+      timestamp: new Date(),
+      isUser: true
+    }
+    setMessages(prev => [...prev, userMessage])
+    
+    // WebSocket 연결 확인 및 생성
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      const sessionId = `session_${Date.now()}`
+      const ws = connectWebSocket(sessionId)
+      
+      ws.onopen = () => {
+        console.log('[Discussion] WebSocket connected for YouTube analysis')
+        // YouTube 영상 분석 로딩 메시지 추가
+        const loadingMessage = {
+          id: Date.now() + 1,
+          type: 'loading',
+          loadingType: 'video',
+          timestamp: new Date(),
+          isAssistant: true
+        }
+        setMessages(prev => [...prev, loadingMessage])
+        
+        // YouTube 영상 분석 요청
+        ws.send(JSON.stringify({
+          action: 'analyze_youtube',
+          url: videoUrl
+        }))
+        setIsLoading(true)
+        setShowYouTubeInput(false)
+        setYoutubeUrl('')
+      }
+    } else {
+      // 이미 연결되어 있으면 바로 전송
+      // YouTube 영상 분석 로딩 메시지 추가
+      const loadingMessage = {
+        id: Date.now() + 1,
+        type: 'loading',
+        loadingType: 'video',
+        timestamp: new Date(),
+        isAssistant: true
+      }
+      setMessages(prev => [...prev, loadingMessage])
+      
+      wsRef.current.send(JSON.stringify({
+        action: 'analyze_youtube',
+        url: videoUrl
+      }))
+      setIsLoading(true)
+      setShowYouTubeInput(false)
+      setYoutubeUrl('')
+    }
+  }
+
+  const analyzeImageUrl = async (imageUrl) => {
+    console.log('[Discussion] 이미지 분석 시작:', imageUrl)
+    
+    // 이미지와 함께 사용자 메시지 표시
+    const userMessage = {
+      id: Date.now(),
+      type: 'image_analysis_request',
+      content: `🔍 AI 이미지 탐지 요청`,
+      imageUrl: imageUrl,
+      timestamp: new Date(),
+      isUser: true
+    }
+    setMessages(prev => [...prev, userMessage])
+    
+    // 로딩 메시지 표시
+    const loadingMessage = {
+      id: Date.now() + 1,
+      type: 'loading',
+      loadingType: 'image',  // 이미지 분석 로딩
+      timestamp: new Date(),
+      isAssistant: true
+    }
+    setMessages(prev => [...prev, loadingMessage])
+    setIsLoading(true)
+    
+    try {
+      // REST API 호출
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/api/analyze-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: imageUrl })
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      console.log('[Discussion] 이미지 분석 결과:', data)
+      
+      // 로딩 메시지 제거
+      setMessages(prev => prev.filter(msg => msg.type !== 'loading'))
+      
+      // 에러 체크
+      if (data.status === 'error') {
+        const errorMessage = {
+          id: Date.now() + 2,
+          type: 'error',
+          content: `❌ ${data.message}`,
+          timestamp: new Date()
+        }
+        setMessages(prev => [...prev, errorMessage])
+      } else {
+        // 성공시 결과 메시지 표시 (구조화된 데이터 사용)
+        const resultMessage = {
+          id: Date.now() + 2,
+          type: 'image_result',
+          analysis: data.analysis,  // 구조화된 분석 데이터
+          imageUrl: data.url || imageUrl,
+          timestamp: new Date(),
+          isAssistant: true
+        }
+        setMessages(prev => [...prev, resultMessage])
+      }
+      
+    } catch (error) {
+      console.error('[Discussion] 이미지 분석 오류:', error)
+      
+      // 로딩 메시지 제거
+      setMessages(prev => prev.filter(msg => msg.type !== 'loading'))
+      
+      // 오류 메시지 표시
+      const errorMessage = {
+        id: Date.now() + 3,
+        type: 'error',
+        content: `❌ 이미지 분석 실패: ${error.message}`,
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, errorMessage])
+      
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleImageSelect = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    // 이미지 파일 확인
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.')
+      return
+    }
+    
+    // 파일 크기 제한 (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('파일 크기는 5MB 이하여야 합니다.')
+      return
+    }
+    
+    // 이미지를 Base64로 변환
+    const reader = new FileReader()
+    reader.onload = () => {
+      const base64Image = reader.result
+      
+      // 이미지 업로드 메시지 표시
+      const imageMessage = {
+        id: Date.now(),
+        type: 'image_analysis',
+        content: `🖼️ AI 이미지 분석 요청: ${file.name}`,
+        image: base64Image,
+        timestamp: new Date(),
+        isUser: true
+      }
+      
+      setMessages(prev => [...prev, imageMessage])
+      
+      // WebSocket으로 이미지 분석 요청
+      if (connectionStatus === 'connected' && wsRef.current) {
+        wsRef.current.send(JSON.stringify({
+          action: 'analyze_image',
+          image: base64Image,
+          filename: file.name
+        }))
+        setIsLoading(true)
+      } else {
+        // WebSocket 연결이 없으면 먼저 연결
+        const sessionId = `session_${Date.now()}`
+        const ws = connectWebSocket(sessionId)
+        
+        ws.onopen = () => {
+          ws.send(JSON.stringify({
+            action: 'analyze_image',
+            image: base64Image,
+            filename: file.name
+          }))
+          setIsLoading(true)
+        }
+      }
+    }
+    reader.readAsDataURL(file)
+    
+    // 파일 입력 초기화
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
   const handleSubmit = (eOrText) => {
     // 문자열이 직접 전달된 경우 (컨텍스트 메뉴에서 호출)
     let question
@@ -923,6 +1286,13 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
       eOrText.preventDefault()
       if (!input.trim()) return
       question = input.trim()
+    }
+
+    // YouTube URL 감지 및 처리
+    if (isYouTubeUrl(question)) {
+      analyzeYouTubeVideo(question)
+      setInput('')
+      return
     }
 
     setCurrentQuestion(question) // 현재 질문 저장
@@ -954,6 +1324,16 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
     const ws = connectWebSocket(sessionId)
 
     const sendFactCheckRequest = () => {
+      // 팩트체킹 로딩 메시지 추가
+      const loadingMessage = {
+        id: Date.now(),
+        type: 'loading',
+        loadingType: 'fact',
+        timestamp: new Date(),
+        isAssistant: true
+      }
+      setMessages(prev => [...prev, loadingMessage])
+      
       ws.send(JSON.stringify({
         action: 'start',
         statement: question
@@ -997,6 +1377,7 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
 
   return (
     <div className="flex flex-col h-full bg-white">
+
       {/* Agent Selection - 토론 시작 창에서만 표시 */}
       {showAgentSelection && (
         <div ref={containerRef} className="border-b border-gray-200 py-4 overflow-hidden">
@@ -1197,6 +1578,144 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
           }
         }
         
+        /* Step 진행 상태 바 */
+        .step-progress-bar {
+          background: linear-gradient(to bottom, #f8f9fa, #fff);
+          border-bottom: 1px solid #e5e7eb;
+          padding: 20px;
+          margin-bottom: 24px;
+        }
+        
+        .step-indicator {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          max-width: 500px;
+          margin: 0 auto;
+        }
+        
+        .step-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
+        }
+        
+        .step-item .step-number {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: #e5e7eb;
+          color: #9ca3af;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          font-size: 16px;
+          transition: all 0.3s;
+        }
+        
+        .step-item.active .step-number {
+          background: #3b82f6;
+          color: white;
+          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .step-item.completed .step-number {
+          background: #10b981;
+          color: white;
+        }
+        
+        .step-item .step-label {
+          margin-top: 8px;
+          font-size: 12px;
+          color: #6b7280;
+          font-weight: 500;
+          white-space: nowrap;
+        }
+        
+        .step-item.active .step-label,
+        .step-item.completed .step-label {
+          color: #111827;
+        }
+        
+        .step-connector {
+          width: 80px;
+          height: 2px;
+          background: #e5e7eb;
+          margin: 0 10px;
+          transition: all 0.3s;
+        }
+        
+        .step-connector.completed {
+          background: #10b981;
+        }
+        
+        /* Step별 메시지 카드 스타일 */
+        .message-card {
+          border-radius: 12px;
+          padding: 20px;
+          margin-bottom: 20px;
+          position: relative;
+          transition: all 0.3s;
+        }
+        
+        .step1-card {
+          background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+          border: 2px solid #3b82f6;
+          box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
+        }
+        
+        .step2-card {
+          background: linear-gradient(135deg, #fef3c7 0%, #ffffff 100%);
+          border: 2px solid #f59e0b;
+          box-shadow: 0 4px 6px rgba(245, 158, 11, 0.1);
+        }
+        
+        .step3-card {
+          background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+          border: 2px solid #10b981;
+          box-shadow: 0 4px 6px rgba(16, 185, 129, 0.1);
+        }
+        
+        .step1-badge {
+          background: #3b82f6;
+          color: white;
+        }
+        
+        .step2-badge {
+          background: #f59e0b;
+          color: white;
+        }
+        
+        .step3-badge {
+          background: #10b981;
+          color: white;
+        }
+        
+        /* Agent 아바타 스타일 */
+        .agent-avatar {
+          width: 64px;
+          height: 64px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          font-size: 36px;
+        }
+        
+        .step1-avatar {
+          background: #dbeafe;
+        }
+        
+        .step2-avatar {
+          background: #fed7aa;
+        }
+        
+        .step3-avatar {
+          background: #d1fae5;
+        }
+        
         .user-message {
           align-self: flex-end;
           background-color: #3b82f6;
@@ -1205,6 +1724,7 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
           border-radius: 18px 18px 4px 18px;
           max-width: 80%;
           margin-left: auto;
+          margin-top: 8px;
           width: fit-content;
         }
         
@@ -1289,15 +1809,65 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
                   <div className="bg-red-50 p-4 rounded-xl mb-5 text-base leading-relaxed text-red-800 border-l-4 border-red-500">
                     ⚠️ {message.content}
                   </div>
+                ) : message.type === 'youtube_result' ? (
+                  <div className="bg-purple-50 p-4 rounded-xl mb-5 border-l-4 border-purple-500">
+                    <div className="text-purple-800 font-semibold mb-2">🎥 YouTube 영상 분석 결과</div>
+                    <div className="text-sm text-purple-700 mb-2">
+                      <a href={message.content.url} target="_blank" rel="noopener noreferrer" className="underline">
+                        {message.content.url.substring(0, 50)}...
+                      </a>
+                    </div>
+                    {message.content.content_type && (
+                      <div className="text-sm text-gray-700 mb-2">
+                        콘텐츠 유형: <span className="font-medium">{message.content.content_type}</span> | 
+                        목적: <span className="font-medium">{message.content.purpose}</span>
+                      </div>
+                    )}
+                    {message.content.needs_factcheck === false ? (
+                      <div className="bg-yellow-100 p-3 rounded-lg text-sm text-yellow-800 mt-2">
+                        ℹ️ {message.content.message || "이 영상은 팩트체킹이 필요하지 않은 콘텐츠입니다."}
+                      </div>
+                    ) : (
+                      <>
+                        {message.content.analysis && (
+                          <div className="text-gray-800 whitespace-pre-wrap text-sm mt-2">
+                            {message.content.analysis}
+                          </div>
+                        )}
+                        {message.content.claims && message.content.claims.length > 0 && (
+                          <div className="mt-3">
+                            <div className="text-sm font-medium text-purple-700 mb-1">
+                              추출된 주장 ({message.content.claims_count || message.content.claims.length}개):
+                            </div>
+                            <ul className="text-sm text-gray-700 space-y-1">
+                              {message.content.claims.slice(0, 5).map((claim, idx) => (
+                                <li key={idx} className="ml-4">• {claim}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                ) : message.type === 'image_result' ? (
+                  <ImageAnalysisResult 
+                    analysis={message.analysis} 
+                    imageUrl={message.imageUrl}
+                  />
                 ) : (
-                  <div className="bg-white rounded-xl p-5 shadow-lg border border-gray-200">
+                  <div className={`message-card ${
+                    message.step === 'step1' ? 'step1-card' : 
+                    message.step === 'step2' ? 'step2-card' : 
+                    message.step === 'step3' ? 'step3-card' : ''
+                  }`}>
                     <div className="flex items-center gap-3 mb-3">
                       <span className="text-4xl w-16 h-16 flex items-center justify-center bg-gray-100 rounded-full">
                         {message.avatar}
                       </span>
                       <div className="flex-1">
-                        <span className="font-semibold text-base text-gray-800">{message.agentName}</span>
-                        {message.verdict && (
+                        <span className="font-semibold text-base text-black">{message.agentName}</span>
+                        {/* Step 2는 토론이므로 verdict 표시 안함 */}
+                        {message.verdict && message.step !== 'step2' && (
                           <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${
                             message.verdict.includes('참') ? 'verdict-참' :
                             message.verdict.includes('거짓') || message.verdict.includes('과장') ? 'verdict-거짓' :
@@ -1339,6 +1909,130 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
                           <strong className="text-sm text-gray-800">판정 근거:</strong>
                           <p className="mt-1 text-sm text-gray-700 leading-relaxed">{message.reasoning}</p>
                         </div>
+                      )}
+                      
+                      {/* Step 2 토론 형식 (단순화된 형식) */}
+                      {message.step === 'step2' && (
+                        <>
+                          {message.debatePosition && (
+                            <div>
+                              <strong className="text-sm text-gray-800">💬 토론 입장:</strong>
+                              <p className="mt-1 text-sm text-gray-700 leading-relaxed">{message.debatePosition}</p>
+                            </div>
+                          )}
+                          
+                          {message.keyAgreements && message.keyAgreements.length > 0 && (
+                            <div>
+                              <strong className="text-sm text-gray-800">✅ 동의하는 의견:</strong>
+                              <ul className="mt-1 space-y-1 text-sm text-gray-700">
+                                {message.keyAgreements.map((agreement, index) => (
+                                  <li key={index} className="ml-4">• {agreement}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          {message.keyDisagreements && message.keyDisagreements.length > 0 && (
+                            <div>
+                              <strong className="text-sm text-gray-800">❌ 반박하는 의견:</strong>
+                              <ul className="mt-1 space-y-1 text-sm text-gray-700">
+                                {message.keyDisagreements.map((disagreement, index) => (
+                                  <li key={index} className="ml-4">• {disagreement}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          {message.additionalEvidence && (
+                            <div>
+                              <strong className="text-sm text-gray-800">🔍 추가 근거:</strong>
+                              <p className="mt-1 text-sm text-gray-700 leading-relaxed">{message.additionalEvidence}</p>
+                            </div>
+                          )}
+                          
+                          {message.questionsRaised && (
+                            <div>
+                              <strong className="text-sm text-gray-800">❓ 제기하는 질문:</strong>
+                              <p className="mt-1 text-sm text-gray-700 leading-relaxed">{message.questionsRaised}</p>
+                            </div>
+                          )}
+                        </>
+                      )}
+                      
+                      {/* Step 3 최종 보고서 형식 추가 필드 */}
+                      {message.step === 'step3' && (
+                        <>
+                          
+                          {message.expertSummary && Object.keys(message.expertSummary).length > 0 && (
+                            <div>
+                              <strong className="text-sm text-gray-800">👥 전문가별 판정 요약:</strong>
+                              <div className="mt-2 space-y-1 text-sm">
+                                {Object.entries(message.expertSummary).map(([agent, data]) => (
+                                  <div key={agent} className="ml-4 border-l-2 border-gray-200 pl-3 py-1">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium">{agentConfig[agent]?.name || agent}</span>
+                                      <span className={`px-2 py-0.5 rounded text-xs ${
+                                        data.verdict?.includes('참') ? 'bg-green-100 text-green-700' :
+                                        data.verdict?.includes('거짓') ? 'bg-red-100 text-red-700' :
+                                        'bg-gray-100 text-gray-700'
+                                      }`}>
+                                        {data.verdict}
+                                      </span>
+                                      {data.reliability && (
+                                        <span className={`text-xs ${
+                                          data.reliability === '높음' ? 'text-green-600' :
+                                          data.reliability === '중간' ? 'text-yellow-600' :
+                                          'text-gray-600'
+                                        }`}>
+                                          (신뢰도: {data.reliability})
+                                        </span>
+                                      )}
+                                    </div>
+                                    {data.key_evidence && (
+                                      <div className="text-xs text-gray-600 mt-1">🔍 {data.key_evidence}</div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {message.keyFactors && message.keyFactors.length > 0 && (
+                            <div>
+                              <strong className="text-sm text-gray-800">⚡ 판정의 핵심 요소:</strong>
+                              <ul className="mt-1 space-y-1 text-sm text-gray-700">
+                                {message.keyFactors.map((factor, index) => (
+                                  <li key={index} className="ml-4">• {factor}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          {message.contextualAnalysis && (
+                            <div>
+                              <strong className="text-sm text-gray-800">📍 맥락 분석:</strong>
+                              <p className="mt-1 text-sm text-gray-700 leading-relaxed">{message.contextualAnalysis}</p>
+                            </div>
+                          )}
+                          
+                          {message.executiveSummary && (
+                            <div className="bg-blue-50 border-l-4 border-blue-400 p-3 mt-3">
+                              <strong className="text-sm text-blue-800">📝 요약:</strong>
+                              <p className="mt-1 text-sm text-blue-700">{message.executiveSummary}</p>
+                            </div>
+                          )}
+                          
+                          {message.caveats && message.caveats.length > 0 && (
+                            <div>
+                              <strong className="text-sm text-gray-800">⚠️ 주의사항:</strong>
+                              <ul className="mt-1 space-y-1 text-sm text-orange-700">
+                                {message.caveats.map((caveat, index) => (
+                                  <li key={index} className="ml-4">• {caveat}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </>
                       )}
                       
                       {message.agreements && message.agreements.length > 0 && (
@@ -1404,19 +2098,118 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
                 <div className="user-message mb-5">
                   {message.content}
                 </div>
+              ) : message.type === 'youtube_request' ? (
+                <div className="mb-5">
+                  <div className="user-message mb-2">
+                    {message.content}
+                  </div>
+                  <div className="ml-auto max-w-md" style={{ marginLeft: 'auto', width: 'fit-content' }}>
+                    <YouTubeThumbnail 
+                      videoInfo={message.videoInfo}
+                      url={message.url}
+                    />
+                  </div>
+                </div>
+              ) : message.type === 'image_analysis_request' ? (
+                <div className="mb-5">
+                  <div className="user-message mb-2">
+                    {message.content}
+                  </div>
+                  <div className="ml-auto max-w-xs" style={{ marginLeft: 'auto', width: 'fit-content' }}>
+                    <img 
+                      src={message.imageUrl} 
+                      alt="분석 요청 이미지" 
+                      className="rounded-lg shadow-lg max-w-full h-auto"
+                      style={{ maxHeight: '300px' }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextElementSibling.style.display = 'block';
+                      }}
+                    />
+                    <div style={{ display: 'none' }} className="bg-gray-200 p-4 rounded-lg text-center text-gray-600">
+                      이미지를 불러올 수 없습니다
+                    </div>
+                  </div>
+                </div>
+              ) : message.type === 'loading' ? (
+                <LoadingMessage type={message.loadingType || 'default'} />
+              ) : message.type === 'step_divider' ? (
+                <div className="my-8 flex items-center">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                  <div className="px-4 py-2 bg-blue-50 rounded-full border border-blue-200">
+                    <span className="text-sm font-medium text-blue-700">{message.stepName}</span>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                </div>
+              ) : message.type === 'image_result' ? (
+                <ImageAnalysisResult 
+                  analysis={message.analysis} 
+                  imageUrl={message.imageUrl}
+                />
               ) : message.type === 'error' ? (
                 <div className="bg-red-50 p-4 rounded-xl mb-5 text-base leading-relaxed text-red-800 border-l-4 border-red-500">
                   ⚠️ {message.content}
                 </div>
+              ) : message.type === 'youtube_result' ? (
+                <div className="bg-purple-50 p-4 rounded-xl mb-5 border-l-4 border-purple-500">
+                  <div className="text-purple-800 font-semibold mb-2">🎥 YouTube 영상 분석 결과</div>
+                  <div className="text-sm text-purple-700 mb-2">
+                    <a href={message.content.url} target="_blank" rel="noopener noreferrer" className="underline">
+                      {message.content.url.substring(0, 50)}...
+                    </a>
+                  </div>
+                  {message.content.content_type && (
+                    <div className="text-sm text-gray-700 mb-2">
+                      콘텐츠 유형: <span className="font-medium">{message.content.content_type}</span> | 
+                      목적: <span className="font-medium">{message.content.purpose}</span>
+                    </div>
+                  )}
+                  {message.content.needs_factcheck === false ? (
+                    <div className="bg-yellow-100 p-3 rounded-lg text-sm text-yellow-800 mt-2">
+                      ℹ️ {message.content.message || "이 영상은 팩트체킹이 필요하지 않은 콘텐츠입니다."}
+                    </div>
+                  ) : (
+                    <>
+                      {message.content.analysis && (
+                        <div className="text-gray-800 whitespace-pre-wrap text-sm mt-2">
+                          {message.content.analysis}
+                        </div>
+                      )}
+                      {message.content.claims && message.content.claims.length > 0 && (
+                        <div className="mt-3">
+                          <div className="text-sm font-medium text-purple-700 mb-1">
+                            추출된 주장 ({message.content.claims_count || message.content.claims.length}개):
+                          </div>
+                          <ul className="text-sm text-gray-700 space-y-1">
+                            {message.content.claims.slice(0, 5).map((claim, idx) => (
+                              <li key={idx} className="ml-4">• {claim}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              ) : message.type === 'image_result' ? (
+                <ImageAnalysisResult 
+                  analysis={message.analysis} 
+                  imageUrl={message.imageUrl}
+                />
               ) : (
                 <div className="bg-white rounded-xl p-5 shadow-lg border border-gray-200">
+                  
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-4xl w-16 h-16 flex items-center justify-center bg-gray-100 rounded-full">
+                    <span className={`agent-avatar ${
+                      message.step === 'step1' ? 'step1-avatar' : 
+                      message.step === 'step2' ? 'step2-avatar' : 
+                      message.step === 'step3' ? 'step3-avatar' : ''
+                    }`}>
                       {message.avatar}
                     </span>
                     <div className="flex-1">
-                      <span className="font-semibold text-base text-gray-800">{message.agentName}</span>
-                      {message.verdict && (
+                      <span className="font-semibold text-base text-black">{message.agentName}</span>
+                      {/* Step 2는 토론이므로 verdict 표시 안함 */}
+                      {message.verdict && message.step !== 'step2' && (
                         <span className={`ml-2 px-2 py-1 rounded text-xs font-medium ${
                           message.verdict.includes('참') ? 'verdict-참' :
                           message.verdict.includes('거짓') || message.verdict.includes('과장') ? 'verdict-거짓' :
@@ -1458,6 +2251,130 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
                         <strong className="text-sm text-gray-800">판정 근거:</strong>
                         <p className="mt-1 text-sm text-gray-700 leading-relaxed">{message.reasoning}</p>
                       </div>
+                    )}
+                    
+                    {/* Step 2 토론 형식 추가 필드 */}
+                    {message.step === 'step2' && (
+                      <>
+                        {message.debatePosition && (
+                          <div>
+                            <strong className="text-sm text-gray-800">💬 토론 입장:</strong>
+                            <p className="mt-1 text-sm text-gray-700 leading-relaxed">{message.debatePosition}</p>
+                          </div>
+                        )}
+                        
+                        {message.keyAgreements && message.keyAgreements.length > 0 && (
+                          <div>
+                            <strong className="text-sm text-gray-800">✅ 동의하는 의견:</strong>
+                            <ul className="mt-1 space-y-1 text-sm text-gray-700">
+                              {message.keyAgreements.map((agreement, index) => (
+                                <li key={index} className="ml-4">• {agreement}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {message.keyDisagreements && message.keyDisagreements.length > 0 && (
+                          <div>
+                            <strong className="text-sm text-gray-800">❌ 반박하는 의견:</strong>
+                            <ul className="mt-1 space-y-1 text-sm text-gray-700">
+                              {message.keyDisagreements.map((disagreement, index) => (
+                                <li key={index} className="ml-4">• {disagreement}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {message.additionalEvidence && (
+                          <div>
+                            <strong className="text-sm text-gray-800">🔍 추가 근거:</strong>
+                            <p className="mt-1 text-sm text-gray-700 leading-relaxed">{message.additionalEvidence}</p>
+                          </div>
+                        )}
+                        
+                        {message.questionsRaised && (
+                          <div>
+                            <strong className="text-sm text-gray-800">❓ 제기하는 질문:</strong>
+                            <p className="mt-1 text-sm text-gray-700 leading-relaxed">{message.questionsRaised}</p>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    
+                    {/* Step 3 최종 보고서 형식 추가 필드 */}
+                    {message.step === 'step3' && (
+                      <>
+                        
+                        {message.expertSummary && Object.keys(message.expertSummary).length > 0 && (
+                          <div>
+                            <strong className="text-sm text-gray-800">👥 전문가별 판정 요약:</strong>
+                            <div className="mt-2 space-y-1 text-sm">
+                              {Object.entries(message.expertSummary).map(([agent, data]) => (
+                                <div key={agent} className="ml-4 border-l-2 border-gray-200 pl-3 py-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium">{agentConfig[agent]?.name || agent}</span>
+                                    <span className={`px-2 py-0.5 rounded text-xs ${
+                                      data.verdict?.includes('참') ? 'bg-green-100 text-green-700' :
+                                      data.verdict?.includes('거짓') ? 'bg-red-100 text-red-700' :
+                                      'bg-gray-100 text-gray-700'
+                                    }`}>
+                                      {data.verdict}
+                                    </span>
+                                    {data.reliability && (
+                                      <span className={`text-xs ${
+                                        data.reliability === '높음' ? 'text-green-600' :
+                                        data.reliability === '중간' ? 'text-yellow-600' :
+                                        'text-gray-600'
+                                      }`}>
+                                        (신뢰도: {data.reliability})
+                                      </span>
+                                    )}
+                                  </div>
+                                  {data.key_evidence && (
+                                    <div className="text-xs text-gray-600 mt-1">🔍 {data.key_evidence}</div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {message.keyFactors && message.keyFactors.length > 0 && (
+                          <div>
+                            <strong className="text-sm text-gray-800">⚡ 판정의 핵심 요소:</strong>
+                            <ul className="mt-1 space-y-1 text-sm text-gray-700">
+                              {message.keyFactors.map((factor, index) => (
+                                <li key={index} className="ml-4">• {factor}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {message.contextualAnalysis && (
+                          <div>
+                            <strong className="text-sm text-gray-800">📍 맥락 분석:</strong>
+                            <p className="mt-1 text-sm text-gray-700 leading-relaxed">{message.contextualAnalysis}</p>
+                          </div>
+                        )}
+                        
+                        {message.executiveSummary && (
+                          <div className="bg-blue-50 border-l-4 border-blue-400 p-3 mt-3">
+                            <strong className="text-sm text-blue-800">📝 요약:</strong>
+                            <p className="mt-1 text-sm text-blue-700">{message.executiveSummary}</p>
+                          </div>
+                        )}
+                        
+                        {message.caveats && message.caveats.length > 0 && (
+                          <div>
+                            <strong className="text-sm text-gray-800">⚠️ 주의사항:</strong>
+                            <ul className="mt-1 space-y-1 text-sm text-orange-700">
+                              {message.caveats.map((caveat, index) => (
+                                <li key={index} className="ml-4">• {caveat}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </>
                     )}
                     
                     {message.agreements && message.agreements.length > 0 && (
@@ -1523,6 +2440,49 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
       )}
 
       {!isViewingHistory && (
+        <>
+        {/* YouTube URL 입력 팝업 */}
+        {showYouTubeInput && (
+          <div className="p-3 bg-gray-50 border-t border-gray-200">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+                placeholder="YouTube URL을 입력하세요 (예: https://www.youtube.com/watch?v=...)"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-gray-600"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && youtubeUrl) {
+                    e.preventDefault()
+                    analyzeYouTubeVideo(youtubeUrl)
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (youtubeUrl) {
+                    analyzeYouTubeVideo(youtubeUrl)
+                  }
+                }}
+                disabled={!youtubeUrl}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-600 transition-colors"
+              >
+                분석
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowYouTubeInput(false)
+                  setYoutubeUrl('')
+                }}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-400 transition-colors"
+              >
+                취소
+              </button>
+            </div>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-gray-200 mt-auto">
         <div className="relative flex items-end">
           <textarea
@@ -1544,6 +2504,31 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
               }
             }}
           />
+          {/* 이미지 업로드 버튼 */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleImageSelect}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute right-24 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gray-200 text-gray-800 rounded-full cursor-pointer text-base flex items-center justify-center transition-colors hover:bg-gray-300 border-none"
+            title="AI 이미지 탐지"
+          >
+            🖼️
+          </button>
+          {/* YouTube 버튼 */}
+          <button
+            type="button"
+            onClick={() => setShowYouTubeInput(!showYouTubeInput)}
+            className="absolute right-14 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gray-200 text-gray-800 rounded-full cursor-pointer text-base flex items-center justify-center transition-colors hover:bg-gray-300 border-none"
+            title="YouTube 영상 분석"
+          >
+            🎥
+          </button>
           <button 
             type="submit" 
             className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gray-200 text-gray-800 rounded-full cursor-pointer text-lg flex items-center justify-center transition-colors hover:bg-gray-300 border-none"
@@ -1552,6 +2537,7 @@ function Discussion({ onSaveResult, onSaveConversation, context, onClearContext 
           </button>
         </div>
         </form>
+        </>
       )}
     </div>
   )

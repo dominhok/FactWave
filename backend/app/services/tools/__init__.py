@@ -22,6 +22,9 @@ from .statistics.owid_rag_tool import OWIDRAGTool
 from .community.twitter_tool import TwitterTool
 from .community.youtube_tool import YouTubeTool
 
+# 검증 도구
+from .verification.ai_image_detector import AIImageDetectorTool
+
 # LLM 에이전트가 직접 사용 가능한 도구만 export
 __all__ = [
     # 학술/연구 (자연어 검색 가능)
@@ -43,6 +46,9 @@ __all__ = [
     # 커뮤니티 도구
     "TwitterTool",          # Twitter/X 커뮤니티 검색
     "YouTubeTool",          # YouTube 영상 검색 및 댓글 분석
+    
+    # 검증 도구
+    "AIImageDetectorTool",  # AI 생성 이미지 탐지 (Sightengine)
 ]
 
 # 제거된 도구들 (코드/ID 필요):

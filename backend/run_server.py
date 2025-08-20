@@ -9,8 +9,11 @@ import sys
 import uvicorn
 from dotenv import load_dotenv
 
-# 환경 변수 로드
-load_dotenv()
+# 환경 변수 로드 - 루트 디렉토리의 .env 파일
+from pathlib import Path
+root_dir = Path(__file__).parent.parent
+env_path = root_dir / ".env"
+load_dotenv(env_path)
 
 def main():
     """메인 서버 실행 함수"""

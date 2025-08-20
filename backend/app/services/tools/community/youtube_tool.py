@@ -41,16 +41,17 @@ class YouTubeTool(BaseTool):
     
     def __init__(self):
         super().__init__()
-        self.youtube = self._initialize_youtube()
+        self._youtube = None  # Private attribute to store YouTube service
     
     def _initialize_youtube(self):
         """YouTube API 초기화"""
         if not YOUTUBE_API_AVAILABLE:
             return None
         
-        api_key = os.getenv('YOUTUBE_API_KEY')
+        # Google API Key (YouTube Data API v3)
+        api_key = os.getenv('GOOGLE_API_KEY')
         if not api_key:
-            console.print("[yellow]YOUTUBE_API_KEY not found in environment[/yellow]")
+            console.print("[yellow]GOOGLE_API_KEY not found in environment[/yellow]")
             return None
         
         try:
@@ -73,7 +74,11 @@ class YouTubeTool(BaseTool):
         if not YOUTUBE_API_AVAILABLE:
             return self._get_setup_instructions()
         
-        if not self.youtube:
+        # Initialize YouTube service if not already done
+        if not self._youtube:
+            self._youtube = self._initialize_youtube()
+        
+        if not self._youtube:
             return self._get_api_key_instructions()
         
         try:
@@ -108,7 +113,7 @@ class YouTubeTool(BaseTool):
     def _search_videos(self, query: str, max_videos: int, language: str) -> List[Dict[str, Any]]:
         """YouTube 영상 검색"""
         try:
-            search_response = self.youtube.search().list(
+            search_response = self._youtube.search().list(
                 q=query,
                 part='id,snippet',
                 type='video',
@@ -129,7 +134,7 @@ class YouTubeTool(BaseTool):
                 return []
             
             # 배치로 영상 상세 정보 가져오기 (API 호출 최적화)
-            video_details = self.youtube.videos().list(
+            video_details = self._youtube.videos().list(
                 part='snippet,statistics,contentDetails',
                 id=','.join(video_ids)  # 한 번의 API 호출로 모든 영상 정보 가져오기
             ).execute()
@@ -160,7 +165,7 @@ class YouTubeTool(BaseTool):
             comments = []
             
             # 댓글 스레드 가져오기 (인기순)
-            comment_response = self.youtube.commentThreads().list(
+            comment_response = self._youtube.commentThreads().list(
                 part='snippet,replies',
                 videoId=video_id,
                 maxResults=min(max_comments, 100),
@@ -346,10 +351,13 @@ uv pip install google-api-python-client"""
 3. API 키 생성 (Credentials 메뉴)
 
 4. .env 파일에 추가:
+   GOOGLE_API_KEY=your_api_key_here
+   또는
    YOUTUBE_API_KEY=your_api_key_here
 
 5. API 키 제한 설정 권장:
-   - YouTube Data API v3만 허용
+   - YouTube Data API v3 허용
+   - Google Fact Check API 허용 (동일 키 사용 가능)
    - IP 주소 또는 HTTP 참조자 제한
 
 ⚠️ 무료 할당량: 일일 10,000 유닛

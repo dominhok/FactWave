@@ -30,6 +30,7 @@ cd frontend && npm run build:watch   # Build with watch mode
 # Code quality
 cd backend && ruff check .    # Run linting
 cd backend && ruff format .   # Format code
+cd frontend && npm run lint   # Run ESLint
 ```
 
 ### Testing Commands

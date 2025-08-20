@@ -407,7 +407,7 @@ class StreamingFactWaveCrew:
         return role_mapping.get(role)
     
     def _extract_full_answer(self, output_str: str) -> str:
-        """전체 Final Answer 추출"""
+        """전체 Final Answer 추출 (JSON 보존을 위해 자르지 않음)"""
         # Final Answer: 이후의 모든 내용 추출
         if "Final Answer:" in output_str:
             answer_part = output_str.split("Final Answer:", 1)[1]
@@ -416,8 +416,8 @@ class StreamingFactWaveCrew:
         else:
             answer_part = output_str
         
-        # 첫 500자 또는 주요 내용 반환
-        return answer_part.strip()[:1000] if len(answer_part) > 1000 else answer_part.strip()
+        # JSON 보존을 위해 자르지 않고 전체 반환
+        return answer_part.strip()
     
     def _extract_analysis_summary(self, output_str: str) -> str:
         """분석 요약 추출"""

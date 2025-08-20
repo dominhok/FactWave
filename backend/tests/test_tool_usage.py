@@ -17,14 +17,12 @@ console = Console()
 # API 설정
 def setup_api():
     """Configure API settings"""
-    api_key = os.getenv("UPSTAGE_API_KEY")
+로    api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        console.print("[red]❌ UPSTAGE_API_KEY not found in .env file![/red]")
+        console.print("[red]❌ OPENAI_API_KEY not found in .env file![/red]")
         sys.exit(1)
     
-    os.environ["OPENAI_API_KEY"] = api_key
-    os.environ["OPENAI_API_BASE"] = "https://api.upstage.ai/v1"
-    os.environ["OPENAI_MODEL_NAME"] = "solar-pro2"
+    os.environ["OPENAI_MODEL_NAME"] = "gpt-4.1-mini"
 
 setup_api()
 

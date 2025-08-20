@@ -3,7 +3,6 @@ function Library({ onLoadContext, onClose, savedConversations = [] }) {
   const conversationItems = savedConversations.map(conv => {
     // 최종 판정 찾기 (Step3 또는 final_result에서)
     let finalVerdict = '분석완료';
-    let confidence = 85;
     let summary = '';
     
     // Super Agent 메시지 찾기
@@ -48,7 +47,6 @@ function Library({ onLoadContext, onClose, savedConversations = [] }) {
       title: actualQuestion, // 실제 질문 사용
       date: conv.date,
       agents: ["News", "Academia", "Logic", "Social", "Statistics"],
-      confidence: confidence,
       verdict: finalVerdict,
       summary: summary, // Step3 1줄 요약
       isConversation: true,
@@ -128,7 +126,6 @@ function Library({ onLoadContext, onClose, savedConversations = [] }) {
                   }`}>
                     {item.verdict || '판정중'}
                   </span>
-                  <span className="text-gray-500 text-xs">{item.confidence}% 신뢰도</span>
                 </div>
               </div>
               
